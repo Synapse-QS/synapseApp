@@ -82,6 +82,7 @@ import com.synapse.social.studioasinc.shared.domain.usecase.chat.UploadMediaUseC
 import com.synapse.social.studioasinc.shared.domain.usecase.chat.ToggleMessageReactionUseCase
 import com.synapse.social.studioasinc.shared.domain.usecase.chat.GetMessageReactionsUseCase
 import com.synapse.social.studioasinc.shared.domain.usecase.chat.PopulateMessageReactionsUseCase
+import com.synapse.social.studioasinc.shared.domain.usecase.chat.SubscribeToMessageReactionsUseCase
 import com.synapse.social.studioasinc.shared.domain.usecase.follow.GetFollowersUseCase
 import com.synapse.social.studioasinc.shared.domain.usecase.follow.GetFollowingUseCase
 import com.synapse.social.studioasinc.shared.domain.usecase.notification.GetNotificationsUseCase
@@ -305,6 +306,13 @@ object ChatModule {
         chatRepository: com.synapse.social.studioasinc.shared.domain.repository.ChatRepository
     ): com.synapse.social.studioasinc.shared.domain.usecase.chat.PopulateMessageReactionsUseCase {
         return PopulateMessageReactionsUseCase(chatRepository)
+    }
+    @Provides
+    @Singleton
+    fun provideSubscribeToMessageReactionsUseCase(
+        chatRepository: com.synapse.social.studioasinc.shared.domain.repository.ChatRepository
+    ): com.synapse.social.studioasinc.shared.domain.usecase.chat.SubscribeToMessageReactionsUseCase {
+        return SubscribeToMessageReactionsUseCase(chatRepository)
     }
 
 }

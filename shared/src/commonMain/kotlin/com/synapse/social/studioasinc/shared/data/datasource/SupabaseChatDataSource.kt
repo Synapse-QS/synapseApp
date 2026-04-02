@@ -45,10 +45,6 @@ class SupabaseChatDataSource(private val client: SupabaseClientLib = SupabaseCli
     suspend fun sendMessageNotification(recipientId: String, senderId: String, message: String, chatId: String) =
         messages.sendMessageNotification(recipientId, senderId, message, chatId)
 
-    /**
-     * Looks up the other participant in a chat from the chat_participants table.
-     * This is more reliable than parsing chatId strings.
-     */
     suspend fun getOtherParticipantId(chatId: String, currentUserId: String): String? =
         keys.getOtherParticipantId(chatId, currentUserId)
 
@@ -138,6 +134,6 @@ class SupabaseChatDataSource(private val client: SupabaseClientLib = SupabaseCli
     fun subscribeToReadReceipts(chatId: String): Flow<MessageDto> =
         realtime.subscribeToReadReceipts(chatId)
 
-    fun subscribeToReactions(messageId: String): Flow<MessageReactionDto> =
-        realtime.subscribeToReactions(messageId)
+    fun subscribeToMessageReactions(): Flow<MessageReactionDto> =
+        realtime.subscribeToMessageReactions()
 }

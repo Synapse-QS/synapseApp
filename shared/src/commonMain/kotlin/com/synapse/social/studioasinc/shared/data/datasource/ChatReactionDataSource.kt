@@ -62,4 +62,16 @@ internal class ChatReactionDataSource(private val client: SupabaseClient) {
             emptyList()
         }
     }
+
+    suspend fun getReactionsForMessages(messageIds: List<String>): List<MessageReactionDto> = withContext(Dispatchers.IO) {
+        if (messageIds.isEmpty()) return@withContext emptyList()
+        try {
+            client.from("message_reactions").select {
+                filter { isIn("message_id", messageIds) }
+            }.decodeList<MessageReactionDto>()
+        } catch (e: Exception) {
+            Napier.e("Error fetching reactions for multiple messages", e)
+            emptyList()
+        }
+    }
 }
