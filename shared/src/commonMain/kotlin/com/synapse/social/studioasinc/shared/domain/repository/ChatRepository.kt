@@ -40,5 +40,9 @@ interface ChatRepository {
     suspend fun leaveGroup(chatId: String): Result<Unit>
     suspend fun toggleOnlyAdminsCanMessage(chatId: String, enabled: Boolean): Result<Unit>
     suspend fun getChatInfo(chatId: String): Result<com.synapse.social.studioasinc.shared.domain.model.chat.ChatInfo?>
+    suspend fun toggleMessageReaction(messageId: String, emoji: String): Result<Unit>
+    suspend fun getReactionsForMessage(messageId: String): Result<List<com.synapse.social.studioasinc.shared.domain.model.chat.MessageReaction>>
+    suspend fun getReactionsForMessages(messages: List<Message>): List<Message>
+    fun subscribeToReactions(messageId: String): Flow<com.synapse.social.studioasinc.shared.domain.model.chat.MessageReaction>
 
 }

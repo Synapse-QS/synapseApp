@@ -5,8 +5,8 @@ import com.synapse.social.studioasinc.shared.data.database.StorageDatabase
 import com.synapse.social.studioasinc.shared.domain.model.chat.DeliveryStatus
 import com.synapse.social.studioasinc.shared.domain.model.chat.Message
 import com.synapse.social.studioasinc.shared.domain.model.chat.MessageType
+import com.synapse.social.studioasinc.shared.domain.model.ReactionType
 import kotlinx.coroutines.Dispatchers
-
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 
@@ -29,7 +29,17 @@ class SqlDelightCachedMessageDao(
         db.cachedMessageQueries.selectByChatId(
             chatId = chatId,
             limit = limit.toLong()
-        ).executeAsList().map { toDomainMessage(it) }
+        ).executeAsList().map { cached ->
+            val domain = toDomainMessage(cached)
+            val reactions = db.messageReactionQueries.selectByMessageId(domain.id).executeAsList()
+
+            val summary = reactions
+                .groupBy { it.reaction_emoji }
+                .mapKeys { ReactionType.fromEmoji(it.key) }
+                .mapValues { it.value.size }
+
+            domain.copy(reactions = summary)
+        }
     }
 
     override suspend fun upsert(message: Message) {
@@ -77,6 +87,9 @@ class SqlDelightCachedMessageDao(
         withContext(Dispatchers.Default) {
             db.cachedMessageQueries.deleteAll()
         }
+    }
+
+    override suspend fun updateReactions(messageId: String, reactions: Map<ReactionType, Int>, userReaction: ReactionType?) {
     }
 
     private fun toCachedMessage(domain: Message, cachedAt: Long): CachedMessage {
@@ -128,5 +141,9 @@ class SqlDelightCachedMessageDao(
             reactions = emptyMap(),
             userReaction = null
         )
+    }
+
+    private fun ReactionType.Companion.fromEmoji(emoji: String): ReactionType {
+        return ReactionType.values().find { it.emoji == emoji } ?: ReactionType.LIKE
     }
 }

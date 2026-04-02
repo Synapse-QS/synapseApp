@@ -2,6 +2,7 @@ package com.synapse.social.studioasinc.shared.data.datasource
 
 import com.synapse.social.studioasinc.shared.util.UUIDUtils
 import com.synapse.social.studioasinc.shared.data.dto.chat.MessageDto
+import com.synapse.social.studioasinc.shared.data.dto.chat.MessageReactionDto
 import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient as SupabaseClientLib
 import io.github.jan.supabase.auth.auth
@@ -244,6 +245,41 @@ internal class ChatRealtimeDataSource(private val client: SupabaseClientLib) {
                 } catch (e: Exception) {
                     Napier.w("Failed to unsubscribe/remove channel: $channelId", e)
                 }
+            }
+        }
+    }
+
+    fun subscribeToReactions(messageId: String): Flow<MessageReactionDto> = callbackFlow {
+        val channelId = "chat-reactions-$messageId-${UUIDUtils.randomUUID()}"
+        val channel = client.realtime.channel(channelId)
+        val flow = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = "message_reactions"
+            filter("message_id", FilterOperator.EQ, messageId)
+        }
+
+        val collector = launch {
+            flow.collect { action ->
+                when (action) {
+                    is PostgresAction.Insert -> try { trySend(action.decodeRecord<MessageReactionDto>()) } catch(e: Exception) {}
+                    is PostgresAction.Update -> try { trySend(action.decodeRecord<MessageReactionDto>()) } catch(e: Exception) {}
+                    else -> {}
+                }
+            }
+        }
+
+        launch {
+            try {
+                channel.subscribe()
+            } catch (e: Exception) {
+                close(e)
+            }
+        }
+
+        awaitClose {
+            collector.cancel()
+            launch {
+                channel.unsubscribe()
+                client.realtime.removeChannel(channel)
             }
         }
     }

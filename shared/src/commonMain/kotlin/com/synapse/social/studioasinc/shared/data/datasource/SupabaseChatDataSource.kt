@@ -4,6 +4,7 @@ import com.synapse.social.studioasinc.shared.core.network.SupabaseClient
 import com.synapse.social.studioasinc.shared.data.dto.chat.ChatParticipantDto
 import com.synapse.social.studioasinc.shared.data.dto.chat.ChatDto
 import com.synapse.social.studioasinc.shared.data.dto.chat.MessageDto
+import com.synapse.social.studioasinc.shared.data.dto.chat.MessageReactionDto
 import com.synapse.social.studioasinc.shared.data.dto.chat.UserPublicKeyDto
 import com.synapse.social.studioasinc.shared.domain.model.User
 import io.github.jan.supabase.SupabaseClient as SupabaseClientLib
@@ -136,4 +137,7 @@ class SupabaseChatDataSource(private val client: SupabaseClientLib = SupabaseCli
 
     fun subscribeToReadReceipts(chatId: String): Flow<MessageDto> =
         realtime.subscribeToReadReceipts(chatId)
+
+    fun subscribeToReactions(messageId: String): Flow<MessageReactionDto> =
+        realtime.subscribeToReactions(messageId)
 }

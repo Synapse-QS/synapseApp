@@ -2,10 +2,13 @@ package com.synapse.social.studioasinc.shared.data.repository
 
 import com.synapse.social.studioasinc.shared.core.network.SupabaseClient
 import com.synapse.social.studioasinc.shared.data.datasource.SupabaseChatDataSource
+import com.synapse.social.studioasinc.shared.data.datasource.ChatReactionDataSource
 import com.synapse.social.studioasinc.shared.data.mapper.ChatMapper.toDomain
 import com.synapse.social.studioasinc.shared.domain.model.chat.Conversation
 import com.synapse.social.studioasinc.shared.domain.model.chat.Message
 import com.synapse.social.studioasinc.shared.domain.model.chat.TypingStatus
+import com.synapse.social.studioasinc.shared.domain.model.chat.MessageReaction
+import com.synapse.social.studioasinc.shared.domain.model.ReactionType
 import com.synapse.social.studioasinc.shared.domain.repository.ChatRepository
 import com.synapse.social.studioasinc.shared.domain.repository.OfflineActionRepository
 import com.synapse.social.studioasinc.shared.domain.model.PendingAction
@@ -54,6 +57,7 @@ class SupabaseChatRepository(
 
     private val encryptionHelper = ChatEncryptionHelper(signalProtocolManager, dataSource, cachedMessageDao)
     private val groupRepository = ChatGroupRepository(dataSource)
+    private val reactionDataSource = ChatReactionDataSource(client)
 
     override suspend fun ensureSession(userId: String) = encryptionHelper.ensureSession(userId)
 
@@ -435,4 +439,54 @@ class SupabaseChatRepository(
     override suspend fun leaveGroup(chatId: String) = groupRepository.leaveGroup(chatId)
     override suspend fun toggleOnlyAdminsCanMessage(chatId: String, enabled: Boolean) = groupRepository.toggleOnlyAdminsCanMessage(chatId, enabled)
     override suspend fun getChatInfo(chatId: String) = groupRepository.getChatInfo(chatId)
+
+    override suspend fun toggleMessageReaction(messageId: String, emoji: String): Result<Unit> =
+        reactionDataSource.toggleReaction(messageId, emoji)
+
+    override suspend fun getReactionsForMessage(messageId: String): Result<List<MessageReaction>> = try {
+        val reactions = reactionDataSource.getReactionsForMessage(messageId).map { dto ->
+            MessageReaction(
+                messageId = dto.messageId,
+                userId = dto.userId,
+                reactionEmoji = dto.reactionEmoji,
+                timestamp = 0L
+            )
+        }
+        Result.success(reactions)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    override suspend fun getReactionsForMessages(messages: List<Message>): List<Message> = try {
+        val currentUserId = getCurrentUserId()
+        coroutineScope {
+            messages.map { message ->
+                async {
+                    val reactions = reactionDataSource.getReactionsForMessage(message.id)
+                    val summary = reactions
+                        .groupBy { it.reactionEmoji }
+                        .mapKeys { ReactionType.values().find { rt -> rt.emoji == it.key } ?: ReactionType.LIKE }
+                        .mapValues { it.value.size }
+
+                    val userReaction = reactions.find { it.userId == currentUserId }?.reactionEmoji?.let { emoji ->
+                        ReactionType.values().find { rt -> rt.emoji == emoji }
+                    }
+
+                    message.copy(reactions = summary, userReaction = userReaction)
+                }
+            }.awaitAll()
+        }
+    } catch (e: Exception) {
+        messages
+    }
+
+    override fun subscribeToReactions(messageId: String): Flow<MessageReaction> =
+        dataSource.subscribeToReactions(messageId).map { dto ->
+            MessageReaction(
+                messageId = dto.messageId,
+                userId = dto.userId,
+                reactionEmoji = dto.reactionEmoji,
+                timestamp = 0L
+            )
+        }
 }
