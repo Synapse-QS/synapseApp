@@ -21,6 +21,10 @@ import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +67,7 @@ fun MessageContextMenu(
 
     @Suppress("DEPRECATION")
     val clipboard = LocalClipboardManager.current
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -194,11 +199,11 @@ fun MessageContextMenu(
                 }
             )
             ContextMenuRow(
-                text = "Copy message link",
-                icon = Icons.Default.Link,
+                text = "Delete",
+                icon = Icons.Default.Delete,
+                tint = MaterialTheme.colorScheme.error,
                 onClick = {
-                    onCopyMessageLink(selectedMessage)
-                    onDismissRequest()
+                    showDeleteDialog = true
                 }
             )
 
@@ -213,16 +218,42 @@ fun MessageContextMenu(
                     onDismissRequest()
                 }
             )
-            ContextMenuRow(
-                text = "Delete",
-                icon = Icons.Default.Delete,
-                tint = MaterialTheme.colorScheme.error,
-                onClick = {
-                    selectedMessage.id?.let { onDeleteMessageForMe(it) }
-                    onDismissRequest()
-                }
-            )
         }
+    }
+
+    if (showDeleteDialog) {
+        val isFromMe = selectedMessage.senderId == currentUserId
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.action_delete)) },
+            text = {
+                Column {
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.action_delete_for_me)) },
+                        modifier = Modifier.clickable {
+                            selectedMessage.id?.let { onDeleteMessageForMe(it) }
+                            showDeleteDialog = false
+                            onDismissRequest()
+                        }
+                    )
+                    if (isFromMe) {
+                        ListItem(
+                            headlineContent = { Text(stringResource(R.string.action_delete_for_everyone)) },
+                            modifier = Modifier.clickable {
+                                selectedMessage.id?.let { onDeleteMessageForEveryone(it) }
+                                showDeleteDialog = false
+                                onDismissRequest()
+                            }
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 }
 
