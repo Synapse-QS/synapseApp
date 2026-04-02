@@ -31,14 +31,16 @@ class SqlDelightCachedMessageDao(
             limit = limit.toLong()
         ).executeAsList().map { cached ->
             val domain = toDomainMessage(cached)
-            val reactions = db.messageReactionQueries.selectByMessageId(domain.id).executeAsList()
-
-            val summary = reactions
-                .groupBy { it.reaction_emoji }
-                .mapKeys { ReactionType.fromEmoji(it.key) }
-                .mapValues { it.value.size }
-
-            domain.copy(reactions = summary)
+            try {
+                val reactions = db.messageReactionQueries.selectByMessageId(domain.id).executeAsList()
+                val summary = reactions
+                    .groupBy { it.reaction_emoji }
+                    .mapKeys { ReactionType.values().find { rt -> rt.emoji == it.key } ?: ReactionType.LIKE }
+                    .mapValues { it.value.size }
+                domain.copy(reactions = summary)
+            } catch (e: Exception) {
+                domain
+            }
         }
     }
 
@@ -141,9 +143,5 @@ class SqlDelightCachedMessageDao(
             reactions = emptyMap(),
             userReaction = null
         )
-    }
-
-    private fun ReactionType.Companion.fromEmoji(emoji: String): ReactionType {
-        return ReactionType.values().find { it.emoji == emoji } ?: ReactionType.LIKE
     }
 }
