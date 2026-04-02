@@ -28,21 +28,25 @@ class ChatInputDelegate(
     private val onChatRefreshRequired: () -> Unit
 ) {
     private var typingDebounceJob: Job? = null
+    private var isCurrentlyTyping = false
 
     fun onInputTextChange(newText: String) {
         _inputText.value = newText
 
         val chatId = currentChatIdProvider() ?: return
 
-        typingDebounceJob?.cancel()
-
-        viewModelScope.launch {
-            broadcastTypingStatusUseCase(chatId, true)
+        if (!isCurrentlyTyping) {
+            isCurrentlyTyping = true
+            viewModelScope.launch {
+                broadcastTypingStatusUseCase(chatId, true)
+            }
         }
 
+        typingDebounceJob?.cancel()
         typingDebounceJob = viewModelScope.launch {
-            delay(2000)
+            delay(3000)
             broadcastTypingStatusUseCase(chatId, false)
+            isCurrentlyTyping = false
         }
     }
 

@@ -22,6 +22,8 @@ import io.github.jan.supabase.postgrest.rpc
 import com.synapse.social.studioasinc.domain.repository.ReactionToggleResult
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
+import io.github.jan.supabase.exceptions.HttpRequestException
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 
 
 
@@ -79,10 +81,13 @@ class ReactionRepositoryImpl @Inject constructor(
                          return@withContext Result.success(ReactionToggleResult.UPDATED)
                      }
                 } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-                     Log.w(TAG, "Optimized toggle failed, falling back to standard Check-Then-Act: ${e.message}")
-                     // Fallthrough to standard logic
+                    throw e
+                } catch (e: HttpRequestException) {
+                    Log.w(TAG, "Network error during optimized toggle: ${e.message}")
+                } catch (e: PostgrestRestException) {
+                    Log.w(TAG, "Database error during optimized toggle: ${e.message}")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Optimized toggle failed: ${e.message}")
                 }
             }
 
@@ -124,12 +129,21 @@ class ReactionRepositoryImpl @Inject constructor(
                     }
 
                     return@withContext Result.success(result)
-                } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
+                } catch (e: HttpRequestException) {
+                    lastException = e
+                    if (attempt == MAX_RETRIES - 1) throw e
+                    Log.w(TAG, "Network error (attempt ${attempt + 1}): ${e.message}")
+                    delay(RETRY_DELAY_MS * (attempt + 1))
+                } catch (e: PostgrestRestException) {
                     lastException = e
                     val isRLSError = e.message?.contains("policy", true) == true
                     if (isRLSError || attempt == MAX_RETRIES - 1) throw e
+                    Log.w(TAG, "Database error (attempt ${attempt + 1}): ${e.message}")
+                    delay(RETRY_DELAY_MS * (attempt + 1))
+                } catch (e: Exception) {
+                    if (e is CancellationException) throw e
+                    lastException = e
+                    if (attempt == MAX_RETRIES - 1) throw e
                     delay(RETRY_DELAY_MS * (attempt + 1))
                 }
             }
