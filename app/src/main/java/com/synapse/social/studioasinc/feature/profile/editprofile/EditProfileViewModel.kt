@@ -110,6 +110,9 @@ class EditProfileViewModel @Inject constructor(
             is EditProfileEvent.AvatarSelected -> {
                 handleAvatarSelection(event.uri)
             }
+            is EditProfileEvent.AvatarCropped -> {
+                _uiState.update { it.copy(pendingAvatarUri = event.uri, hasChanges = true, avatarUploadState = UploadState.Idle) }
+            }
             is EditProfileEvent.CoverSelected -> {
                 handleCoverSelection(event.uri)
             }
@@ -222,70 +225,60 @@ class EditProfileViewModel @Inject constructor(
 
     private fun handleAvatarSelection(uri: Uri) {
         lastAvatarUri = uri
-        _uiState.update { it.copy(avatarUploadState = UploadState.Uploading()) }
-
-        viewModelScope.launch {
-            try {
-                val context = getApplication<Application>()
-                android.util.Log.d("EditProfile", "Processing avatar URI: $uri")
-
-
-                var realFilePath = UriUtils.getPathFromUri(context, uri)
-                android.util.Log.d("EditProfile", "Converted file path: $realFilePath")
-
-
-                if (realFilePath == null) {
-                    android.util.Log.d("EditProfile", "URI conversion failed, copying content to temp file")
-                    val tempInputFile = File(context.cacheDir, "temp_input_avatar_${System.currentTimeMillis()}.jpg")
-
-                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                        tempInputFile.outputStream().use { outputStream ->
-                            inputStream.copyTo(outputStream)
-                        }
-                    }
-
-                    if (tempInputFile.exists() && tempInputFile.length() > 0) {
-                        realFilePath = tempInputFile.absolutePath
-                        android.util.Log.d("EditProfile", "Successfully copied to temp file: $realFilePath")
-                    } else {
-                        throw Exception("Failed to copy image content from URI")
-                    }
-                }
-
-
-                val sourceFile = File(realFilePath)
-                if (!sourceFile.exists()) {
-                    throw Exception("Source file does not exist: $realFilePath")
-                }
-                if (sourceFile.length() == 0L) {
-                    throw Exception("Source file is empty: $realFilePath")
-                }
-
-
-                val tempFile = File(context.cacheDir, "temp_avatar_${System.currentTimeMillis()}.jpg")
-                android.util.Log.d("EditProfile", "Compressing image to: ${tempFile.absolutePath}")
-
-                ImageUtils.resizeBitmapFileRetainRatio(realFilePath, tempFile.absolutePath, 1024)
-
-
-                if (!tempFile.exists() || tempFile.length() == 0L) {
-                    throw Exception("Image compression failed")
-                }
-
-                android.util.Log.d("EditProfile", "Image compressed successfully, size: ${tempFile.length()} bytes")
-
-
-                uploadAvatar(tempFile.absolutePath)
-
-            } catch (e: Exception) {
-                android.util.Log.e("EditProfile", "Avatar processing failed", e)
-                _uiState.update {
-                    it.copy(avatarUploadState = UploadState.Error("Failed to process image: ${e.message}"))
-                }
-            }
-        }
     }
 
+    private suspend fun compressAndUploadAvatar(uri: Uri): Result<String> {
+        val context = getApplication<Application>()
+        android.util.Log.d("EditProfile", "Processing avatar URI: $uri")
+
+        var realFilePath = UriUtils.getPathFromUri(context, uri)
+        android.util.Log.d("EditProfile", "Converted file path: $realFilePath")
+
+        if (realFilePath == null) {
+            android.util.Log.d("EditProfile", "URI conversion failed, copying content to temp file")
+            val tempInputFile = File(context.cacheDir, "temp_input_avatar_${System.currentTimeMillis()}.jpg")
+
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                tempInputFile.outputStream().use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+
+            if (tempInputFile.exists() && tempInputFile.length() > 0) {
+                realFilePath = tempInputFile.absolutePath
+                android.util.Log.d("EditProfile", "Successfully copied to temp file: $realFilePath")
+            } else {
+                return Result.failure(Exception("Failed to copy image content from URI"))
+            }
+        }
+
+        val sourceFile = File(realFilePath)
+        if (!sourceFile.exists()) {
+            return Result.failure(Exception("Source file does not exist: $realFilePath"))
+        }
+        if (sourceFile.length() == 0L) {
+            return Result.failure(Exception("Source file is empty: $realFilePath"))
+        }
+
+        val tempFile = File(context.cacheDir, "temp_avatar_${System.currentTimeMillis()}.jpg")
+        android.util.Log.d("EditProfile", "Compressing image to: ${tempFile.absolutePath}")
+
+        ImageUtils.resizeBitmapFileRetainRatio(realFilePath, tempFile.absolutePath, 1024)
+
+        if (!tempFile.exists() || tempFile.length() == 0L) {
+            return Result.failure(Exception("Image compression failed"))
+        }
+
+        android.util.Log.d("EditProfile", "Image compressed successfully, size: ${tempFile.length()} bytes")
+
+        val userId = repository.getCurrentUserId()
+            ?: return Result.failure(Exception("User not logged in"))
+
+        android.util.Log.d("EditProfile", "Starting avatar upload for user: $userId, file: ${tempFile.absolutePath}")
+        return repository.uploadAvatar(userId, tempFile.absolutePath)
+    }
+
+    @Deprecated("Logic moved to compressAndUploadAvatar and saveProfile")
     private fun uploadAvatar(filePath: String) {
         viewModelScope.launch {
             try {
@@ -455,7 +448,7 @@ class EditProfileViewModel @Inject constructor(
 
     private fun retryAvatarUpload() {
         lastAvatarUri?.let { uri ->
-            handleAvatarSelection(uri)
+            onEvent(EditProfileEvent.AvatarCropped(uri))
         }
     }
 
@@ -482,12 +475,47 @@ class EditProfileViewModel @Inject constructor(
             }
 
             try {
-                val updateData = buildUpdateDataMap(state)
+                var finalState = state
+                if (state.pendingAvatarUri != null) {
+                    _uiState.update { it.copy(avatarUploadState = UploadState.Uploading()) }
+                    val uploadResult = compressAndUploadAvatar(state.pendingAvatarUri)
+                    uploadResult.fold(
+                        onSuccess = { url ->
+                            android.util.Log.d("EditProfile", "Avatar upload successful: $url")
+                            _uiState.update {
+                                it.copy(
+                                    avatarUrl = url,
+                                    avatarUploadState = UploadState.Success,
+                                    pendingAvatarUri = null,
+                                    showShareToFeedDialog = true
+                                )
+                            }
+                            finalState = _uiState.value
+                            try {
+                                repository.addToProfileHistory(userId, url)
+                            } catch (e: Exception) {
+                                android.util.Log.w("EditProfile", "Failed to add to profile history", e)
+                            }
+                        },
+                        onFailure = { error ->
+                            android.util.Log.e("EditProfile", "Avatar upload failed", error)
+                            _uiState.update {
+                                it.copy(
+                                    avatarUploadState = UploadState.Error("Avatar upload failed: ${error.message}"),
+                                    isSaving = false
+                                )
+                            }
+                            return@launch
+                        }
+                    )
+                }
+
+                val updateData = buildUpdateDataMap(finalState)
                 val result = repository.updateProfile(userId, updateData)
 
                 result.fold(
                     onSuccess = {
-                        handleSuccessfulSave(state, userId)
+                        handleSuccessfulSave(finalState, userId)
                     },
                     onFailure = { error ->
                         _uiState.update { it.copy(isSaving = false, error = "Failed to save: ${error.message}") }

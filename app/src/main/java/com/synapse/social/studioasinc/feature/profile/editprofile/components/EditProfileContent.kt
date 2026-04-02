@@ -39,6 +39,7 @@ fun EditProfileContent(
             ProfileImageSection(
                 coverUrl = uiState.coverUrl,
                 avatarUrl = uiState.avatarUrl,
+                pendingAvatarUri = uiState.pendingAvatarUri,
                 avatarUploadState = uiState.avatarUploadState,
                 coverUploadState = uiState.coverUploadState,
                 onCoverClick = onCoverClick,

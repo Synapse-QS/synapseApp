@@ -52,6 +52,7 @@ import com.synapse.social.studioasinc.feature.shared.theme.Spacing
 fun ProfileImageSection(
     coverUrl: String?,
     avatarUrl: String?,
+    pendingAvatarUri: android.net.Uri? = null,
     avatarUploadState: com.synapse.social.studioasinc.presentation.editprofile.UploadState,
     coverUploadState: com.synapse.social.studioasinc.presentation.editprofile.UploadState,
     onCoverClick: () -> Unit,
@@ -168,10 +169,18 @@ fun ProfileImageSection(
                         color = MaterialTheme.colorScheme.surface,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        if (avatarUrl != null && avatarUrl.isNotBlank()) {
-                            android.util.Log.d("ProfileImageSection", "Loading avatar from URL: $avatarUrl")
+                        val model = when {
+                            pendingAvatarUri != null -> pendingAvatarUri
+                            avatarUrl != null && avatarUrl.isNotBlank() -> ImageLoader.buildImageRequest(LocalContext.current, avatarUrl)
+                            else -> null
+                        }
+
+                        if (model != null) {
+                            if (avatarUrl != null && avatarUrl.isNotBlank()) {
+                                android.util.Log.d("ProfileImageSection", "Loading avatar from URL: $avatarUrl")
+                            }
                             AsyncImage(
-                                model = ImageLoader.buildImageRequest(LocalContext.current, avatarUrl),
+                                model = model,
                                 contentDescription = "Profile photo",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop

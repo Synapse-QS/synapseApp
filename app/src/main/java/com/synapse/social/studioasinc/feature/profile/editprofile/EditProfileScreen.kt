@@ -41,6 +41,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
 import com.synapse.social.studioasinc.R
 import com.synapse.social.studioasinc.CreatePostActivity
 import com.synapse.social.studioasinc.presentation.editprofile.components.EditProfileContent
@@ -67,11 +70,27 @@ fun EditProfileScreen(
     val context = LocalContext.current
 
 
+    val cropLauncher = rememberLauncherForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            result.uriContent?.let { viewModel.onEvent(EditProfileEvent.AvatarCropped(it)) }
+        }
+    }
+
     val avatarPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
             viewModel.onEvent(EditProfileEvent.AvatarSelected(uri))
+            cropLauncher.launch(
+                CropImageContractOptions(
+                    uri = uri,
+                    cropImageOptions = CropImageOptions(
+                        aspectRatioX = 1,
+                        aspectRatioY = 1,
+                        fixAspectRatio = true
+                    )
+                )
+            )
         }
     }
 
