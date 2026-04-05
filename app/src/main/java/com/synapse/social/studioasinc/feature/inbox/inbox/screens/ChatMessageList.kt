@@ -38,6 +38,7 @@ internal fun ChatMessageList(
     onSwipeToReply: (Message) -> Unit,
     onLongClick: (Message) -> Unit,
     onReactionSelected: (String, SharedReactionType) -> Unit,
+    onShowReactionPicker: (Message) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val messagesMap = remember(messages) {
@@ -98,6 +99,7 @@ internal fun ChatMessageList(
                             }
                         },
                         onReactionSelected = { reaction -> message.id?.let { onReactionSelected(it, reaction) } },
+                        onShowReactionPicker = { onShowReactionPicker(message) },
                         fontScale = chatFontScale,
                         cornerRadius = chatMessageCornerRadius,
                         themePreset = chatThemePreset,

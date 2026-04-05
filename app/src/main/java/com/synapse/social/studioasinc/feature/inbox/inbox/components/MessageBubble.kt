@@ -378,12 +378,15 @@ fun MessageBubble(
                 modifier = Modifier.padding(bottom = Spacing.Tiny)
             )
         }
+        Box {
         Surface(
             color = containerColor,
             contentColor = contentColor,
             shape = shape,
             tonalElevation = Sizes.BorderThin,
-            modifier = Modifier.widthIn(max = Sizes.BubbleMaxWidth)
+            modifier = Modifier
+                .widthIn(max = Sizes.BubbleMaxWidth)
+                .padding(bottom = if (message.reactions.isNotEmpty()) 12.dp else 0.dp)
         ) {
             Column(modifier = Modifier.padding(horizontal = Spacing.SmallMedium, vertical = Spacing.Small)) {
 
@@ -574,28 +577,12 @@ fun MessageBubble(
                 }
             }
         }
-
-        if (isFromMe && (position == GroupPosition.LAST || position == GroupPosition.SINGLE)
-            && message.deliveryStatus == DeliveryStatus.READ) {
-            AsyncImage(
-                model = senderAvatarUrl,
-                contentDescription = stringResource(R.string.chat_cd_reader_avatar),
-                contentScale = ContentScale.Crop,
-                placeholder = rememberVectorPainter(Icons.Filled.Person),
-                error = rememberVectorPainter(Icons.Filled.Person),
-                modifier = Modifier
-                    .padding(top = Spacing.Tiny)
-                    .size(Sizes.AvatarTiny)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            )
-        }
-
         if (message.reactions.isNotEmpty()) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = Spacing.Small)
-                    .offset(y = (-8).dp),
+                    .align(if (isFromMe) Alignment.BottomEnd else Alignment.BottomStart)
+                    .offset(y = 12.dp)
+                    .padding(horizontal = Spacing.Small),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.Tiny)
             ) {
                 message.reactions.forEach { (type, count) ->
@@ -624,7 +611,6 @@ fun MessageBubble(
                         }
                     }
                 }
-
                 IconButton(
                     onClick = onShowReactionPicker,
                     modifier = Modifier.size(24.dp)
@@ -636,6 +622,25 @@ fun MessageBubble(
                     )
                 }
             }
+        }
+        } // Box
+
+        if (message.reactions.isNotEmpty()) Spacer(modifier = Modifier.height(12.dp))
+
+        if (isFromMe && (position == GroupPosition.LAST || position == GroupPosition.SINGLE)
+            && message.deliveryStatus == DeliveryStatus.READ) {
+            AsyncImage(
+                model = senderAvatarUrl,
+                contentDescription = stringResource(R.string.chat_cd_reader_avatar),
+                contentScale = ContentScale.Crop,
+                placeholder = rememberVectorPainter(Icons.Filled.Person),
+                error = rememberVectorPainter(Icons.Filled.Person),
+                modifier = Modifier
+                    .padding(top = Spacing.Tiny)
+                    .size(Sizes.AvatarTiny)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            )
         }
 
         if (replyCount > 0) {

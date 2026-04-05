@@ -335,7 +335,8 @@ fun ChatScreen(
                         onToggleSelection = { viewModel.toggleMessageSelection(it) },
                         onSwipeToReply = { viewModel.setReplyingToMessage(it) },
                         onLongClick = { selectedMessageForMenu = it },
-                        onReactionSelected = { id, reaction -> viewModel.toggleMessageReaction(id, reaction) }
+                        onReactionSelected = { id, reaction -> viewModel.toggleMessageReaction(id, reaction) },
+                        onShowReactionPicker = { selectedMessageForMenu = it }
                     )
 
                     // Context Menu and Reactions for messages
