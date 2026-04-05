@@ -10,8 +10,6 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.readBytes
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 class SupabaseUploadService(private val supabase: SupabaseClient) : UploadService {
     override suspend fun upload(
