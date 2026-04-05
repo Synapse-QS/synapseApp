@@ -1,8 +1,8 @@
 package com.synapse.social.studioasinc.feature.inbox.inbox.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -53,7 +53,6 @@ internal fun ChatMessageList(
             top = Spacing.Medium,
             bottom = Sizes.WidthLarge
         ),
-        verticalArrangement = Arrangement.spacedBy(Spacing.ExtraSmall),
         reverseLayout = true
     ) {
         val reversedItems = chatItems.reversed()
@@ -80,7 +79,9 @@ internal fun ChatMessageList(
                         else -> GroupPosition.MIDDLE
                     }
                     val isSelected = message.id in selectedMessageIds
+                    val bottomGap = if (position == GroupPosition.LAST || position == GroupPosition.SINGLE) Spacing.Small else Spacing.Tiny
                     MessageBubble(
+                        modifier = Modifier.padding(bottom = bottomGap),
                         message = message,
                         isFromMe = message.isFromMe(currentUserId),
                         position = position,

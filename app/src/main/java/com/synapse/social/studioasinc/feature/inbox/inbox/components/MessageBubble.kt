@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -235,7 +236,8 @@ fun MessageBubble(
     senderName: String? = null,
     senderAvatarUrl: String? = null,
     reactions: List<Pair<String, Int>> = emptyList(),
-    replyCount: Int = 0
+    replyCount: Int = 0,
+    modifier: Modifier = Modifier
 ) {
     val alignment = if (isFromMe) Alignment.CenterEnd else Alignment.CenterStart
 
@@ -292,7 +294,7 @@ fun MessageBubble(
 
     Box(
 
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f) else Color.Transparent)
             .combinedClickable(
@@ -341,19 +343,39 @@ fun MessageBubble(
                     }
                 )
             },
-        contentAlignment = alignment
     ) {
-        Column(
-            horizontalAlignment = if (isFromMe) Alignment.End else Alignment.Start
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = if (isFromMe) Arrangement.End else Arrangement.Start
         ) {
-            if (!isFromMe && (position == GroupPosition.SINGLE || position == GroupPosition.FIRST) && showAvatar) {
-                SenderHeaderRow(
-                    avatarUrl = senderAvatarUrl,
-                    displayName = senderName ?: "",
-                    timestamp = remember(message.createdAt) { formatMessageTime(message.createdAt) },
-                    isStarred = false
-                )
+            if (!isFromMe) {
+                if (showAvatar && (position == GroupPosition.LAST || position == GroupPosition.SINGLE)) {
+                    AsyncImage(
+                        model = senderAvatarUrl,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(Sizes.AvatarSmall)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                    )
+                } else {
+                    Spacer(modifier = Modifier.size(Sizes.AvatarSmall))
+                }
+                Spacer(modifier = Modifier.width(Spacing.Small))
             }
+            Column(
+                horizontalAlignment = if (isFromMe) Alignment.End else Alignment.Start
+            ) {
+        if (position == GroupPosition.FIRST || position == GroupPosition.SINGLE) {
+            Text(
+                text = remember(message.createdAt) { formatMessageTime(message.createdAt) },
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                modifier = Modifier.padding(bottom = Spacing.Tiny)
+            )
+        }
         Surface(
             color = containerColor,
             contentColor = contentColor,
@@ -364,24 +386,45 @@ fun MessageBubble(
             Column(modifier = Modifier.padding(horizontal = Spacing.SmallMedium, vertical = Spacing.Small)) {
 
                 if (replyToMessage != null) {
+                    val quoteCardColor = if (isFromMe)
+                        MaterialTheme.colorScheme.surface
+                    else
+                        MaterialTheme.colorScheme.surfaceContainerHigh
                     Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        color = quoteCardColor,
                         shape = RoundedCornerShape(Sizes.CornerMedium),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = Spacing.ExtraSmall)
+                            .padding(bottom = Spacing.Small)
                     ) {
-                        Row(modifier = Modifier.padding(Spacing.Small), verticalAlignment = Alignment.CenterVertically) {
-                            Text("❝", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(end = Spacing.ExtraSmall))
-
-                            // Given that we don't have access to the replyToMessage senderName and avatarURL on the base Message data class natively (we'd have to look them up),
-                            // we'll attempt to provide a fallback name for now since we don't have sender name on the model.
-                            // If they were on the model: AsyncImage(model=replyToMessage.senderAvatarUrl) + text=(replyToMessage.senderName ?: "").uppercase()
+                        Row(
+                            modifier = Modifier.padding(Spacing.Small),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "❝",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(end = Spacing.Small)
+                            )
+                            val isOwnReply = replyToMessage.senderId == message.senderId
+                            AsyncImage(
+                                model = if (isOwnReply) null else senderAvatarUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(Sizes.AvatarTiny)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                            )
+                            Spacer(modifier = Modifier.width(Spacing.ExtraSmall))
                             Column {
                                 Text(
-                                    text = (if (replyToMessage.senderId == message.senderId) "You" else "Them").uppercase(),
+                                    text = if (isOwnReply) stringResource(R.string.chat_reply_you)
+                                           else (senderName?.uppercase() ?: stringResource(R.string.chat_reply_them)),
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.primary
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = replyToMessage.content ?: "",
@@ -515,60 +558,30 @@ fun MessageBubble(
                 }
 
                 Spacer(modifier = Modifier.height(Spacing.Tiny))
-                Row(
-                    modifier = Modifier.align(Alignment.End),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.ExtraSmall)
-                ) {
-                    if (message.expiresAt != null) {
-                        Icon(
-                            imageVector = Icons.Default.Timer,
-                            contentDescription = "Disappearing Message",
-                            modifier = Modifier.size(Sizes.StatusDot),
-                            tint = contentColor.copy(alpha = 0.6f)
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription = "End-to-End Encrypted",
-                        modifier = Modifier.size(Sizes.StatusDot),
-                        tint = contentColor.copy(alpha = 0.6f)
-                    )
-                    if (message.isEdited) {
-                        Text(
-                            text = stringResource(id = R.string.edited),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = contentColor.copy(alpha = 0.6f),
-                            fontStyle = FontStyle.Italic
-                        )
-                    }
+                if (message.isEdited) {
                     Text(
-                        text = remember(message.createdAt) { formatMessageTime(message.createdAt) },
+                        text = stringResource(id = R.string.edited),
                         style = MaterialTheme.typography.labelSmall,
-                        color = contentColor.copy(alpha = 0.6f)
+                        color = contentColor.copy(alpha = 0.6f),
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier.align(Alignment.End)
                     )
-                    if (isFromMe) {
-                        val isRead = message.deliveryStatus == DeliveryStatus.READ
-                        val isSent = message.deliveryStatus == DeliveryStatus.SENT
-                        val iconTint = if (isRead) StatusRead else contentColor.copy(alpha = 0.6f)
-                        if (isSent) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = "Sent",
-                                tint = iconTint,
-                                modifier = Modifier.size(Sizes.IconSemiSmall)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.DoneAll,
-                                contentDescription = if (isRead) "Read" else "Delivered",
-                                tint = iconTint,
-                                modifier = Modifier.size(Sizes.IconSemiSmall)
-                            )
-                        }
-                    }
                 }
             }
+        }
+
+        if (isFromMe && (position == GroupPosition.LAST || position == GroupPosition.SINGLE)
+            && message.deliveryStatus == DeliveryStatus.READ) {
+            AsyncImage(
+                model = senderAvatarUrl,
+                contentDescription = stringResource(R.string.chat_cd_reader_avatar),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(top = Spacing.Tiny)
+                    .size(Sizes.AvatarTiny)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            )
         }
 
         if (reactions.isNotEmpty()) {
@@ -610,7 +623,8 @@ fun MessageBubble(
         if (replyCount > 0) {
             RepliesIndicatorRow(count = replyCount)
         }
-        }
+        } // Column
+        } // Row
     }
 }
 
