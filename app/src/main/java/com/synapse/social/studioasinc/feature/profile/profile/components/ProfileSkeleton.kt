@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.synapse.social.studioasinc.feature.shared.theme.Spacing
@@ -17,25 +18,45 @@ import com.synapse.social.studioasinc.feature.shared.theme.Sizes
 
 @Composable
 fun ProfileHeaderShimmer(modifier: Modifier = Modifier) {
+    val coverHeight = Sizes.HeightExtraLarge
+    val overlap = Sizes.HeightMedium
+    val contentPaddingTop = coverHeight - overlap
+    val avatarSize = Sizes.AvatarHuge
+    val avatarPaddingTop = contentPaddingTop - (avatarSize * 0.20f)
+    val textSpacerTop = (avatarSize * 0.80f) + Spacing.SmallMedium
+
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+        modifier = modifier.fillMaxWidth()
     ) {
         ShimmerBox(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(Sizes.HeightExtraLarge),
+                .height(coverHeight),
             shape = RoundedCornerShape(0.dp)
         )
 
         Box(
             modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = Spacing.Medium)
-                .offset(y = Sizes.AvatarHugeHalfOffset) // half of AvatarHuge
+                .fillMaxWidth()
+                .padding(top = contentPaddingTop)
+                .clip(RoundedCornerShape(topStart = Sizes.CornerMassive, topEnd = Sizes.CornerMassive))
+                .background(MaterialTheme.colorScheme.surface)
         ) {
-            ShimmerCircle(size = Sizes.AvatarHuge)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.Medium)
+            ) {
+                Spacer(modifier = Modifier.height(textSpacerTop))
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .padding(start = Spacing.Medium)
+                .padding(top = avatarPaddingTop)
+        ) {
+            ShimmerCircle(size = avatarSize)
         }
     }
 }
@@ -48,8 +69,6 @@ fun ProfileBioShimmer(displayName: String? = null, modifier: Modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = Spacing.Medium)
     ) {
-        Spacer(modifier = Modifier.height(Sizes.AvatarHugeOffset))
-
         if (displayName != null) {
             Text(
                 text = displayName,
