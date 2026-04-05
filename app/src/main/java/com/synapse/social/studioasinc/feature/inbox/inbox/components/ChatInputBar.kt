@@ -250,7 +250,7 @@ fun ChatInputBar(
                     }
                 }
 
-                Spacer(modifier = Modifier.width(Spacing.ExtraSmall))
+                Spacer(modifier = Modifier.width(1.dp))
             }
         }
 
