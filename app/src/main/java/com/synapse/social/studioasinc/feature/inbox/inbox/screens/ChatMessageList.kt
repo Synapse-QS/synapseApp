@@ -17,6 +17,7 @@ import com.synapse.social.studioasinc.feature.inbox.inbox.components.isWithinTim
 import com.synapse.social.studioasinc.feature.inbox.inbox.models.ChatListItem
 import com.synapse.social.studioasinc.feature.shared.theme.Sizes
 import com.synapse.social.studioasinc.feature.shared.theme.Spacing
+import com.synapse.social.studioasinc.shared.core.network.SupabaseClient
 import com.synapse.social.studioasinc.shared.domain.model.chat.Message
 import com.synapse.social.studioasinc.shared.domain.model.settings.ChatThemePreset
 import com.synapse.social.studioasinc.shared.domain.model.ReactionType as SharedReactionType
@@ -102,7 +103,9 @@ internal fun ChatMessageList(
                         themePreset = chatThemePreset,
                         showAvatar = !chatAvatarDisabled,
                         senderName = participantProfile?.displayName ?: participantProfile?.name,
-                        senderAvatarUrl = participantProfile?.avatar
+                        senderAvatarUrl = participantProfile?.avatar?.let {
+                            if (it.startsWith("http")) it else SupabaseClient.constructAvatarUrl(it)
+                        }
                     )
                 }
             }
