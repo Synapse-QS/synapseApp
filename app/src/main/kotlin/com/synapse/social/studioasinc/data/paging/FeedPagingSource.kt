@@ -214,9 +214,7 @@ class FeedPagingSource(
                     val post = enrichedPostsMap[postId] ?: return@mapNotNull null
                     val resharerUsername = userMap[resharerId]?.get("username")?.let { if (it is kotlinx.serialization.json.JsonPrimitive) it else null }?.contentOrNull
 
-                    val resharedPost = post.copy().apply {
-                        resharedByUsername = resharerUsername
-                    }
+                    val resharedPost = post.copy(resharedByUsername = resharerUsername)
                     FeedItem.PostItem(resharedPost)
                 } else if (type == "comment") {
                     commentsMap[id]
@@ -308,10 +306,10 @@ class FeedPagingSource(
             val resharedPostIds = reshares.mapNotNull { it["post_id"]?.let { if (it is kotlinx.serialization.json.JsonPrimitive) it else null }?.contentOrNull }.toSet()
 
             posts.map { post ->
-                post.copy().apply {
-                    isBookmarked = bookmarkedPostIds.contains(post.id)
+                post.copy(
+                    isBookmarked = bookmarkedPostIds.contains(post.id),
                     isReshared = resharedPostIds.contains(post.id)
-                }
+                )
             }
         } catch (e: Exception) {
             Log.e("FeedPagingSource", "Error fetching user interactions", e)
