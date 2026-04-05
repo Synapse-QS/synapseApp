@@ -182,7 +182,7 @@ fun ChatInputBar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Spacing.ExtraSmall, vertical = Spacing.ExtraSmall),
+                    .padding(horizontal = Spacing.ExtraSmall, vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Emoji / Attachment button
@@ -229,6 +229,10 @@ fun ChatInputBar(
                         disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
+                        top = 6.dp, bottom = 6.dp,
+                        start = Spacing.ExtraSmall, end = Spacing.ExtraSmall
                     ),
                     maxLines = 4
                 )
