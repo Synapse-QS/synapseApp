@@ -237,25 +237,30 @@ class ChatMessagingRepositoryImpl @Inject constructor(
 
     /**
      * Subscribe to real-time new messages for a specific chat.
-     * Uses callbackFlow + channel.subscribe() matching the notification pattern.
+     * Uses callbackFlow + if (channel.status.value == io.github.jan.supabase.realtime.RealtimeChannel.Status.UNSUBSCRIBED || channel.status.value == io.github.jan.supabase.realtime.RealtimeChannel.Status.UNSUBSCRIBED) {
+     * Uses callbackFlow +     channel.subscribe()
+     * Uses callbackFlow + }
      */
     fun subscribeToMessages(chatId: String): Flow<ChatMessage> {
         return callbackFlow {
-            val channel = client.channel("chat-$chatId") {}
+            val channel = client.channel("chat-messages-$chatId-${java.util.UUID.randomUUID()}") {}
             val flow = channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
                 table = "messages"
                 filter("chat_id", FilterOperator.EQ, chatId)
             }
 
-            val collector = launch {
+            val collector = launch(Dispatchers.IO) {
                 flow.map { it.decodeRecord<ChatMessage>() }.collect { message ->
                     trySend(message)
                 }
             }
 
             launch(Dispatchers.IO) {
+                kotlinx.coroutines.yield()
                 try {
-                    channel.subscribe()
+                    if (channel.status.value == io.github.jan.supabase.realtime.RealtimeChannel.Status.UNSUBSCRIBED || channel.status.value == io.github.jan.supabase.realtime.RealtimeChannel.Status.UNSUBSCRIBED) {
+                        channel.subscribe()
+                    }
                 } catch (e: Exception) {
                     if (e !is CancellationException) {
                         Napier.e("Failed to subscribe to chat realtime channel", e, tag = TAG)

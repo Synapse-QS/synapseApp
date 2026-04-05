@@ -71,21 +71,24 @@ class SupabaseNotificationRepository(
         }
 
         return callbackFlow {
-            val channel = supabase.realtime.channel("notifications:$userId") {}
+            val channel = supabase.realtime.channel("notifications-$userId-${com.synapse.social.studioasinc.shared.util.UUIDUtils.randomUUID()}") {}
             val flow = channel.postgresChangeFlow<PostgresAction.Insert>(schema = "public") {
                 table = "notifications"
                 filter("recipient_id", FilterOperator.EQ, userId)
             }
 
-            val collector = launch {
+            val collector = launch(Dispatchers.IO) {
                 flow.map { it.decodeRecord<NotificationDto>() }.collect {
                     trySend(it.toDomain())
                 }
             }
 
             launch(Dispatchers.IO) {
+                kotlinx.coroutines.yield()
                 try {
-                    channel.subscribe()
+                    if (channel.status.value == io.github.jan.supabase.realtime.RealtimeChannel.Status.UNSUBSCRIBED || channel.status.value == io.github.jan.supabase.realtime.RealtimeChannel.Status.UNSUBSCRIBED) {
+                        channel.subscribe()
+                    }
                 } catch (e: Exception) {
                     if (e !is CancellationException) {
                         Napier.e("Failed to subscribe to realtime channel", e)
