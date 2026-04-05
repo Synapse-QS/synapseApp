@@ -96,6 +96,6 @@ Presentation  →  ViewModel  →  Domain (UseCases / Interfaces)  →  Data (Re
 | --- | --- |
 | Shared Domain | `shared/src/commonMain/kotlin/.../domain/` |
 | Shared Data | `shared/src/commonMain/kotlin/.../data/` |
-| Android UI | `app/src/main/java/.../` |
+| Android UI | `app/src/main/kotlin/.../` |
 | iOS UI | `iosApp/iosApp/` |
 | PR Templates | `.github/PULL_REQUEST_TEMPLATE/` |
