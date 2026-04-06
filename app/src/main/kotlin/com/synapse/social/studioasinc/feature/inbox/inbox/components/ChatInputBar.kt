@@ -18,10 +18,12 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -217,23 +219,30 @@ fun ChatInputBar(
                     }
                 }
 
-                TextField(
+                BasicTextField(
                     value = inputText,
                     onValueChange = onInputTextChange,
                     modifier = Modifier
                         .weight(1f)
-                        .defaultMinSize(minHeight = 1.dp)
-                        .padding(top = Spacing.ExtraSmall, bottom = Spacing.ExtraSmall),
+                        .padding(vertical = Spacing.ExtraSmall),
                     enabled = canSendMessage,
-                    placeholder = { Text(stringResource(R.string.chat_type_message)) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                    maxLines = 4,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface
                     ),
-                    maxLines = 4
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    decorationBox = { innerTextField ->
+                        Box {
+                            if (inputText.isEmpty()) {
+                                Text(
+                                    text = stringResource(R.string.chat_type_message),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
                 )
 
                 @OptIn(ExperimentalFoundationApi::class)
