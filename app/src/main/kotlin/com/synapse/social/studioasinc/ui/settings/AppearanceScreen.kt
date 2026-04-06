@@ -22,9 +22,11 @@ import com.synapse.social.studioasinc.feature.shared.theme.Spacing
 fun AppearanceScreen(
     viewModel: AppearanceViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToChatCustomization: () -> Unit = {}
+    onNavigateToChatCustomization: () -> Unit = {},
+    onNavigateToFont: () -> Unit = {}
 ) {
     val appearanceSettings by viewModel.appearanceSettings.collectAsState()
+    val selectedFontDisplayName by viewModel.selectedFontDisplayName.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
@@ -72,6 +74,18 @@ fun AppearanceScreen(
                 .padding(horizontal = SettingsSpacing.screenPadding),
             verticalArrangement = Arrangement.spacedBy(SettingsSpacing.sectionSpacing)
         ) {
+
+            item {
+                SettingsSection(title = stringResource(R.string.settings_font_title)) {
+                    SettingsNavigationItem(
+                        title = stringResource(R.string.settings_font_title),
+                        subtitle = selectedFontDisplayName,
+                        imageVector = null,
+                        onClick = onNavigateToFont,
+                        enabled = !isLoading
+                    )
+                }
+            }
 
             item {
                 SettingsSection(title = stringResource(R.string.settings_theme_t)) {

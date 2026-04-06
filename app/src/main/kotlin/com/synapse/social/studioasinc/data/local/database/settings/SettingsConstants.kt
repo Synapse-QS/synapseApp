@@ -27,6 +27,7 @@ object SettingsConstants {
     val KEY_FONT_SCALE = stringPreferencesKey("font_scale")
     val KEY_APP_LANGUAGE = stringPreferencesKey("app_language")
     val KEY_POST_VIEW_STYLE = stringPreferencesKey("post_view_style")
+    val KEY_SELECTED_FONT_ID = stringPreferencesKey("selected_font_id")
 
     val KEY_PROFILE_VISIBILITY = stringPreferencesKey("profile_visibility")
     val KEY_CONTENT_VISIBILITY = stringPreferencesKey("content_visibility")
@@ -93,6 +94,7 @@ object SettingsConstants {
     val DEFAULT_DYNAMIC_COLOR_ENABLED = true
     val DEFAULT_FONT_SCALE = FontScale.MEDIUM
     val DEFAULT_APP_LANGUAGE = "en"
+    val DEFAULT_SELECTED_FONT_ID = "product_sans"
     val DEFAULT_PROFILE_VISIBILITY = ProfileVisibility.PUBLIC
     val DEFAULT_CONTENT_VISIBILITY = ContentVisibility.EVERYONE
     val DEFAULT_GROUP_PRIVACY = GroupPrivacy.EVERYONE

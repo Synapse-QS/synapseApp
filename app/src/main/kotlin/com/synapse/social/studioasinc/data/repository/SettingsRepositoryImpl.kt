@@ -73,6 +73,8 @@ class SettingsRepositoryImpl private constructor(
 
     override val appearanceSettings: Flow<AppearanceSettings> = settingsDataStore.appearanceSettings
 
+    override val selectedFontId: Flow<String> = settingsDataStore.selectedFontId
+
     override suspend fun setThemeMode(mode: ThemeMode) {
         settingsDataStore.setThemeMode(mode)
     }
@@ -87,6 +89,10 @@ class SettingsRepositoryImpl private constructor(
 
     override suspend fun setPostViewStyle(style: com.synapse.social.studioasinc.ui.settings.PostViewStyle) {
         settingsDataStore.setPostViewStyle(style)
+    }
+
+    override suspend fun setSelectedFontId(id: String) {
+        settingsDataStore.setSelectedFontId(id)
     }
 
     override val language: Flow<String> = settingsDataStore.language

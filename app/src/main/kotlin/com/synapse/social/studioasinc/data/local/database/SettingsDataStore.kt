@@ -84,6 +84,7 @@ class SettingsDataStore private constructor(
             preferences.remove(SettingsConstants.KEY_ACCOUNT_REPORTS_AUTO_CREATE)
             preferences.remove(SettingsConstants.KEY_CHANNELS_REPORTS_AUTO_CREATE)
             preferences.remove(SettingsConstants.KEY_HIDE_PROFILE_PIC_SUGGESTION)
+            preferences.remove(SettingsConstants.KEY_SELECTED_FONT_ID)
         }
     }
 
@@ -99,6 +100,7 @@ class SettingsDataStore private constructor(
             preferences[SettingsConstants.KEY_DYNAMIC_COLOR_ENABLED] = SettingsConstants.DEFAULT_DYNAMIC_COLOR_ENABLED
             preferences[SettingsConstants.KEY_FONT_SCALE] = SettingsConstants.DEFAULT_FONT_SCALE.name
             preferences[SettingsConstants.KEY_APP_LANGUAGE] = SettingsConstants.DEFAULT_APP_LANGUAGE
+            preferences[SettingsConstants.KEY_SELECTED_FONT_ID] = SettingsConstants.DEFAULT_SELECTED_FONT_ID
 
             preferences[SettingsConstants.KEY_PROFILE_VISIBILITY] = SettingsConstants.DEFAULT_PROFILE_VISIBILITY.name
             preferences[SettingsConstants.KEY_CONTENT_VISIBILITY] = SettingsConstants.DEFAULT_CONTENT_VISIBILITY.name

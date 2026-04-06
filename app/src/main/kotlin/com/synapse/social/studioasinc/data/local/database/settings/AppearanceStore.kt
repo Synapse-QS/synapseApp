@@ -14,11 +14,13 @@ interface AppearanceStore {
     val dynamicColorEnabled: Flow<Boolean>
     val fontScale: Flow<FontScale>
     val appearanceSettings: Flow<AppearanceSettings>
+    val selectedFontId: Flow<String>
 
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun setDynamicColorEnabled(enabled: Boolean)
     suspend fun setFontScale(scale: FontScale)
     suspend fun setPostViewStyle(style: com.synapse.social.studioasinc.ui.settings.PostViewStyle)
+    suspend fun setSelectedFontId(id: String)
 }
 
 class AppearanceStoreImpl(private val dataStore: DataStore<Preferences>) : AppearanceStore {
@@ -50,8 +52,13 @@ class AppearanceStoreImpl(private val dataStore: DataStore<Preferences>) : Appea
             postViewStyle = preferences[SettingsConstants.KEY_POST_VIEW_STYLE]?.let { value ->
                 runCatching { com.synapse.social.studioasinc.ui.settings.PostViewStyle.valueOf(value) }
                     .getOrDefault(com.synapse.social.studioasinc.ui.settings.PostViewStyle.SWIPE)
-            } ?: com.synapse.social.studioasinc.ui.settings.PostViewStyle.SWIPE
+            } ?: com.synapse.social.studioasinc.ui.settings.PostViewStyle.SWIPE,
+            selectedFontId = preferences[SettingsConstants.KEY_SELECTED_FONT_ID] ?: SettingsConstants.DEFAULT_SELECTED_FONT_ID
         )
+    }
+
+    override val selectedFontId: Flow<String> = dataStore.safePreferencesFlow().map { preferences ->
+        preferences[SettingsConstants.KEY_SELECTED_FONT_ID] ?: SettingsConstants.DEFAULT_SELECTED_FONT_ID
     }
 
     override suspend fun setThemeMode(mode: ThemeMode) {
@@ -75,6 +82,12 @@ class AppearanceStoreImpl(private val dataStore: DataStore<Preferences>) : Appea
     override suspend fun setPostViewStyle(style: com.synapse.social.studioasinc.ui.settings.PostViewStyle) {
         dataStore.edit { preferences ->
             preferences[SettingsConstants.KEY_POST_VIEW_STYLE] = style.name
+        }
+    }
+
+    override suspend fun setSelectedFontId(id: String) {
+        dataStore.edit { preferences ->
+            preferences[SettingsConstants.KEY_SELECTED_FONT_ID] = id
         }
     }
 }

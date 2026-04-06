@@ -25,6 +25,9 @@ class AppearanceViewModel(
     private val _appearanceSettings = MutableStateFlow(AppearanceSettings())
     val appearanceSettings: StateFlow<AppearanceSettings> = _appearanceSettings.asStateFlow()
 
+    private val _selectedFontDisplayName = MutableStateFlow("Product Sans")
+    val selectedFontDisplayName: StateFlow<String> = _selectedFontDisplayName.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -57,6 +60,19 @@ class AppearanceViewModel(
             } catch (e: Exception) {
                 android.util.Log.e("AppearanceViewModel", "Failed to load appearance settings", e)
                 _error.value = "Failed to load appearance settings"
+            }
+        }
+        viewModelScope.launch {
+            try {
+                settingsRepository.selectedFontId.collect { id ->
+                    _selectedFontDisplayName.value = if (id.startsWith("custom_")) {
+                        id.removePrefix("custom_")
+                    } else {
+                        "Product Sans"
+                    }
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             }
         }
     }

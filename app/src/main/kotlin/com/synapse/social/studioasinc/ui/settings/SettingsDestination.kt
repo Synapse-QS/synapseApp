@@ -96,6 +96,8 @@ sealed class SettingsDestination(val route: String) {
 
     object Flags : SettingsDestination(ROUTE_FLAGS)
 
+    object Font : SettingsDestination(ROUTE_FONT)
+
     companion object {
 
         const val ROUTE_HUB = "settings_hub"
@@ -124,6 +126,7 @@ sealed class SettingsDestination(val route: String) {
         const val ROUTE_CHAT_SETTINGS = "settings_chat_settings"
         const val ROUTE_CHAT_FOLDERS = "settings_chat_folders"
         const val ROUTE_FLAGS = "settings_flags"
+        const val ROUTE_FONT = "settings_font"
 
 
 
@@ -152,7 +155,8 @@ sealed class SettingsDestination(val route: String) {
             BlockedContacts,
             ChatSettings,
             ChatFolders,
-            Flags
+            Flags,
+            Font
         )
 
 
@@ -183,6 +187,7 @@ sealed class SettingsDestination(val route: String) {
             ROUTE_CHAT_SETTINGS -> ChatSettings
             ROUTE_CHAT_FOLDERS -> ChatFolders
             ROUTE_FLAGS -> Flags
+            ROUTE_FONT -> Font
             else -> null
         }
     }
