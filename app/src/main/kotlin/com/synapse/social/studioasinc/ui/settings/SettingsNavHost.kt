@@ -140,6 +140,19 @@ fun SettingsNavHost(
                 },
                 onNavigateToChatCustomization = {
 
+                },
+                onNavigateToFont = {
+                    navController.navigate(SettingsDestination.ROUTE_FONT)
+                }
+            )
+        }
+
+        composable(route = SettingsDestination.ROUTE_FONT) {
+            val viewModel: FontViewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel()
+            FontScreen(
+                viewModel = viewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

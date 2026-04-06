@@ -37,7 +37,7 @@ interface SettingsRepository {
 
     val appearanceSettings: Flow<AppearanceSettings>
 
-
+    val selectedFontId: Flow<String>
 
     suspend fun setThemeMode(mode: ThemeMode)
 
@@ -53,7 +53,7 @@ interface SettingsRepository {
 
     suspend fun setPostViewStyle(style: com.synapse.social.studioasinc.ui.settings.PostViewStyle)
 
-
+    suspend fun setSelectedFontId(id: String)
 
     val language: Flow<String>
 

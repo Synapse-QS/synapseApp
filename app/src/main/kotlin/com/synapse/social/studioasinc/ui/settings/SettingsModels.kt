@@ -115,13 +115,21 @@ data class AppearanceSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val dynamicColorEnabled: Boolean = true,
     val fontScale: FontScale = FontScale.MEDIUM,
-    val postViewStyle: PostViewStyle = PostViewStyle.SWIPE
+    val postViewStyle: PostViewStyle = PostViewStyle.SWIPE,
+    val selectedFontId: String = "product_sans"
 )
 
 enum class PostViewStyle {
     SWIPE, GRID;
     fun displayName(): String = name.lowercase().replaceFirstChar { it.uppercase() }
 }
+
+data class AppFontFamily(
+    val id: String,
+    val displayName: String,
+    val isBuiltIn: Boolean,
+    val fontFamily: androidx.compose.ui.text.font.FontFamily? = null
+)
 
 data class PrivacySettings(
     val profileVisibility: ProfileVisibility = ProfileVisibility.PUBLIC,

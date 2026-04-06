@@ -1718,4 +1718,9 @@ Please explain the following message from %3$s in detail, considering the contex
     <string name="share_reel">Share Reel</string>
     <string name="seen_by_count">Seen by %1$d</string>
     <string name="default_avatar_letter">A</string>
+    <string name="settings_font_title">Font</string>
+    <string name="settings_font_add">Add Font</string>
+    <string name="settings_font_preview">The quick brown fox jumps over the lazy dog</string>
+    <string name="settings_font_selected">Selected</string>
+    <string name="action_back">Back</string>
 </resources>
