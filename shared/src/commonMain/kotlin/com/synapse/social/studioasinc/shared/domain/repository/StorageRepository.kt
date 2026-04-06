@@ -19,4 +19,5 @@ interface StorageRepository {
 
     suspend fun updateCompression(enabled: Boolean)
     suspend fun ensureDefault()
+    suspend fun clearProviderConfig(provider: StorageProvider)
 }

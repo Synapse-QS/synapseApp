@@ -124,6 +124,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun clearProviderConfig(provider: StorageProvider) {
+        viewModelScope.launch {
+            storageRepository.clearProviderConfig(provider)
+        }
+    }
+
     private fun String?.toStorageProvider(): StorageProvider {
         return when (this) {
             "ImgBB" -> StorageProvider.IMGBB

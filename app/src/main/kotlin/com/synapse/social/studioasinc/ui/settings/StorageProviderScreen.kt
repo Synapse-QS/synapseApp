@@ -179,7 +179,8 @@ fun StorageProviderScreen(
             ProviderConfigCard(
                 title = "ImgBB",
                 isConfigured = storageConfig.isProviderConfigured(StorageProvider.IMGBB),
-                isExpanded = false
+                isExpanded = false,
+                onClearCredentials = { viewModel.clearProviderConfig(StorageProvider.IMGBB) }
             ) {
                 ImgBBConfigContent(
                     apiKey = storageConfig.imgBBKey,
@@ -191,7 +192,8 @@ fun StorageProviderScreen(
             ProviderConfigCard(
                 title = "Cloudinary",
                 isConfigured = storageConfig.isProviderConfigured(StorageProvider.CLOUDINARY),
-                isExpanded = false
+                isExpanded = false,
+                onClearCredentials = { viewModel.clearProviderConfig(StorageProvider.CLOUDINARY) }
             ) {
                 CloudinaryConfigContent(
                     cloudName = storageConfig.cloudinaryCloudName,
@@ -208,7 +210,8 @@ fun StorageProviderScreen(
             ProviderConfigCard(
                 title = "Supabase Storage",
                 isConfigured = storageConfig.isProviderConfigured(StorageProvider.SUPABASE),
-                isExpanded = false
+                isExpanded = false,
+                onClearCredentials = { viewModel.clearProviderConfig(StorageProvider.SUPABASE) }
             ) {
                 SupabaseConfigContent(
                     url = storageConfig.supabaseUrl,
@@ -224,7 +227,8 @@ fun StorageProviderScreen(
             ProviderConfigCard(
                 title = "Cloudflare R2",
                 isConfigured = storageConfig.isProviderConfigured(StorageProvider.CLOUDFLARE_R2),
-                isExpanded = false
+                isExpanded = false,
+                onClearCredentials = { viewModel.clearProviderConfig(StorageProvider.CLOUDFLARE_R2) }
             ) {
                 R2ConfigContent(
                     accountId = storageConfig.r2AccountId,
@@ -376,6 +380,7 @@ private fun ProviderConfigCard(
     title: String,
     isConfigured: Boolean,
     isExpanded: Boolean,
+    onClearCredentials: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var expanded by remember { mutableStateOf(isExpanded) }
@@ -451,6 +456,15 @@ private fun ProviderConfigCard(
                     )
                 }
 
+                if (isConfigured) {
+                    IconButton(onClick = onClearCredentials) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Remove $title credentials",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
 
                 val rotationAngle by animateFloatAsState(
                     targetValue = if (expanded) 180f else 0f,
