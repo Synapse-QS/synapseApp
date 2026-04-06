@@ -11,7 +11,7 @@ object SettingsDataProvider {
     private fun getGroupA(): SettingsGroup {
         return SettingsGroup(
             id = "group_a",
-            title = null,
+            title = "Account",
             categories = listOf(
 
                 SettingsCategory(
@@ -45,7 +45,7 @@ object SettingsDataProvider {
     private fun getGroupB(): SettingsGroup {
         return SettingsGroup(
             id = "group_b",
-            title = null,
+            title = "Preferences",
             categories = listOf(
                 SettingsCategory(
                     id = "privacy",
@@ -94,7 +94,7 @@ object SettingsDataProvider {
     private fun getGroupC(): SettingsGroup {
         return SettingsGroup(
             id = "group_c",
-            title = null,
+            title = "Notifications & Storage",
             categories = listOf(
                 SettingsCategory(
                     id = "notifications",
@@ -119,7 +119,7 @@ object SettingsDataProvider {
     private fun getGroupD(): SettingsGroup {
         return SettingsGroup(
             id = "group_d",
-            title = null,
+            title = "General",
             categories = listOf(
                 SettingsCategory(
                     id = "accessibility",
