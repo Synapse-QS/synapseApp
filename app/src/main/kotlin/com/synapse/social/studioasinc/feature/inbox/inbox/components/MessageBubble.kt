@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -245,6 +246,8 @@ fun MessageBubble(
 ) {
     val horizontalAlignment = if (isFromMe) Alignment.End else Alignment.Start
 
+    val bubbleMaxWidth = (LocalConfiguration.current.screenWidthDp * 0.8f).dp
+
     val isDark = isSystemInDarkTheme()
 
     val containerColor = if (isFromMe) {
@@ -386,10 +389,10 @@ fun MessageBubble(
             shape = shape,
             tonalElevation = Sizes.BorderThin,
             modifier = Modifier
-                .widthIn(max = Sizes.BubbleMaxWidth)
+                .widthIn(max = bubbleMaxWidth)
                 .padding(bottom = if (message.reactions.isNotEmpty()) 12.dp else 0.dp)
         ) {
-            Column(modifier = Modifier.padding(horizontal = Spacing.SmallMedium, vertical = Spacing.Small)) {
+            Column(modifier = Modifier.padding(horizontal = Spacing.ExtraSmall, vertical = Spacing.ExtraSmall)) {
 
                 if (replyToMessage != null) {
                     val quoteCardColor = if (isFromMe)
