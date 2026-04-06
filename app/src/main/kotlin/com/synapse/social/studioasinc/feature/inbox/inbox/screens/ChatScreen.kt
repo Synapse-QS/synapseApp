@@ -198,6 +198,8 @@ fun ChatScreen(
     val replyingToMessage by viewModel.replyingToMessage.collectAsState()
     val toastMessage by viewModel.toastMessage.collectAsState()
     val isGroupChat by viewModel.isGroupChat.collectAsState()
+    val isLoadingMore by viewModel.isLoadingMore.collectAsState()
+    val hasMoreMessages by viewModel.hasMoreMessages.collectAsState()
 
     val currentUserId = viewModel.currentUserId ?: ""
 
@@ -361,6 +363,8 @@ fun ChatScreen(
                         participantAvatarUrl = participantAvatarUrl,
                         isGroupChat = isGroupChat,
                         listState = listState,
+                        isLoadingMore = isLoadingMore,
+                        onLoadMore = { if (hasMoreMessages) viewModel.loadMoreMessages() },
                         onToggleSelection = { viewModel.toggleMessageSelection(it) },
                         onSwipeToReply = { viewModel.setReplyingToMessage(it) },
                         onLongClick = { selectedMessageForMenu = it },

@@ -66,6 +66,9 @@ class ChatViewModel @Inject constructor(
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
+    private val _hasMoreMessages = MutableStateFlow(true)
+    val hasMoreMessages: StateFlow<Boolean> = _hasMoreMessages.asStateFlow()
+
     private val _participantProfile = MutableStateFlow<User?>(null)
     val participantProfile: StateFlow<User?> = _participantProfile.asStateFlow()
 
@@ -320,10 +323,30 @@ class ChatViewModel @Inject constructor(
     /** Re-fetches messages for the current chat (e.g. after screen resumes from off). */
     fun refreshMessages() {
         val chatId = currentChatId ?: return
+        _hasMoreMessages.value = true
         viewModelScope.launch {
             getMessagesUseCase(chatId).onSuccess { messages ->
                 messagingDelegate.setMessages(messages)
             }
+        }
+    }
+
+    fun loadMoreMessages() {
+        val chatId = currentChatId ?: return
+        if (_isLoadingMore.value || !_hasMoreMessages.value) return
+        val oldest = messagingDelegate.messages.value.firstOrNull()?.createdAt ?: return
+        _isLoadingMore.value = true
+        viewModelScope.launch {
+            getMessagesUseCase(chatId, before = oldest).onSuccess { older ->
+                if (older.isEmpty()) {
+                    _hasMoreMessages.value = false
+                } else {
+                    messagingDelegate._messages.update { current ->
+                        (older + current).distinctBy { it.id }.sortedBy { it.createdAt }
+                    }
+                }
+            }
+            _isLoadingMore.value = false
         }
     }
 

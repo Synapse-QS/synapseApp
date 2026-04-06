@@ -182,12 +182,12 @@ fun ChatInputBar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = Spacing.None),
+                    .padding(vertical = Spacing.None, end = Spacing.Tiny),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Emoji / Attachment button
                 Box {
-                    IconButton(onClick = { showAttachmentMenu = true }) {
+                    IconButton(onClick = { showAttachmentMenu = true }, modifier = Modifier.size(40.dp)) {
                         Icon(
                             Icons.Default.Add,
                             contentDescription = "Attach file",
@@ -230,13 +230,19 @@ fun ChatInputBar(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
+                    contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
+                        top = Spacing.Small,
+                        bottom = Spacing.Small,
+                        start = Spacing.None,
+                        end = Spacing.None
+                    ),
                     maxLines = 4
                 )
 
                 @OptIn(ExperimentalFoundationApi::class)
                 Surface(
                     modifier = Modifier
-                        .size(Sizes.SendButton)
+                        .size(36.dp)
                         .combinedClickable(
                             onClick = { onSendMessage(); dismissedPreviewUrl = null }
                         ),
@@ -250,7 +256,6 @@ fun ChatInputBar(
                     }
                 }
 
-                Spacer(modifier = Modifier.width(Spacing.Tiny))
             }
         }
 
