@@ -1326,6 +1326,7 @@ Please explain the following message from %3$s in detail, considering the contex
     <string name="chat_action_play_video">Play Video</string>
     <string name="chat_action_play_audio">Play Audio</string>
     <string name="chat_action_pause_audio">Pause Audio</string>
+    <string name="voice_cancel_hint">Slide to cancel \u2039</string>
     <string name="chat_action_open_file">Open File</string>
     <string name="chat_action_open_link">Open Link</string>
     <string name="chat_cd_file">File</string>

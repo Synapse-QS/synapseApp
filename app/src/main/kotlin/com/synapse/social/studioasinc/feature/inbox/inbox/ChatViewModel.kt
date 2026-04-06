@@ -507,6 +507,24 @@ class ChatViewModel @Inject constructor(
         mediaDelegate.uploadAndSendMedia(filePath, fileName, contentType, messageType, caption)
     }
 
+    fun sendVoiceMessage(mediaUrl: String, durationMs: Long) {
+        val chatId = currentChatId ?: return
+        viewModelScope.launch {
+            sendMessageUseCase(
+                chatId = chatId,
+                content = "Voice Message (${durationMs / 1000}s)",
+                mediaUrl = mediaUrl,
+                messageType = "audio"
+            ).onSuccess { actualMessage ->
+                messagingDelegate._messages.update { current ->
+                    (current + actualMessage).distinctBy { it.id }.sortedBy { it.createdAt }
+                }
+            }.onFailure { e ->
+                _error.value = "Failed to send voice message: ${e.message}"
+            }
+        }
+    }
+
     fun getFormattedTimestamp(timestamp: String?): String = TimestampFormatter.formatRelative(timestamp)
 
     private fun cleanup() {
