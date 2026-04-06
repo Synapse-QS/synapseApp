@@ -160,6 +160,9 @@ interface SettingsRepository {
     val chatAvatarDisabled: Flow<Boolean>
     suspend fun setChatAvatarDisabled(enabled: Boolean)
 
+    val chatMessagePaginationLimit: Flow<Int>
+    suspend fun setChatMessagePaginationLimit(limit: Int)
+
     val chatMaxMessageChunkSize: Flow<Int>
     suspend fun setChatMaxMessageChunkSize(size: Int)
 

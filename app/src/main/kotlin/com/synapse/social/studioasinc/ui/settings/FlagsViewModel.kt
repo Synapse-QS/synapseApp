@@ -2,6 +2,7 @@ package com.synapse.social.studioasinc.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.synapse.social.studioasinc.data.local.database.settings.SettingsConstants
 import com.synapse.social.studioasinc.data.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,6 +30,13 @@ class FlagsViewModel @Inject constructor(
             initialValue = false
         )
 
+    val chatMessagePaginationLimit: StateFlow<Int> = settingsRepository.chatMessagePaginationLimit
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = SettingsConstants.DEFAULT_CHAT_MESSAGE_PAGINATION_LIMIT
+        )
+
     fun setMessageSuggestionEnabled(enabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.setMessageSuggestionEnabled(enabled)
@@ -38,6 +46,12 @@ class FlagsViewModel @Inject constructor(
     fun setChatAvatarDisabled(disabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.setChatAvatarDisabled(disabled)
+        }
+    }
+
+    fun setChatMessagePaginationLimit(limit: Int) {
+        viewModelScope.launch {
+            settingsRepository.setChatMessagePaginationLimit(limit)
         }
     }
 }

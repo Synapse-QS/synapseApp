@@ -20,6 +20,7 @@ interface ChatStore {
     val chatMaxMessageChunkSize: Flow<Int>
     val chatFoldersJson: Flow<String?>
     val chatAvatarDisabled: Flow<Boolean>
+    val chatMessagePaginationLimit: Flow<Int>
 
     suspend fun setChatFontScale(scale: Float)
     suspend fun setChatThemePreset(preset: ChatThemePreset)
@@ -32,6 +33,7 @@ interface ChatStore {
     suspend fun setChatMaxMessageChunkSize(size: Int)
     suspend fun setChatFoldersJson(json: String)
     suspend fun setChatAvatarDisabled(enabled: Boolean)
+    suspend fun setChatMessagePaginationLimit(limit: Int)
 }
 
 class ChatStoreImpl(private val dataStore: DataStore<Preferences>) : ChatStore {
@@ -155,6 +157,16 @@ class ChatStoreImpl(private val dataStore: DataStore<Preferences>) : ChatStore {
     override suspend fun setChatAvatarDisabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[SettingsConstants.KEY_CHAT_AVATAR_DISABLED] = enabled
+        }
+    }
+
+    override val chatMessagePaginationLimit: Flow<Int> = dataStore.safePreferencesFlow().map { preferences ->
+        preferences[SettingsConstants.KEY_CHAT_MESSAGE_PAGINATION_LIMIT] ?: SettingsConstants.DEFAULT_CHAT_MESSAGE_PAGINATION_LIMIT
+    }
+
+    override suspend fun setChatMessagePaginationLimit(limit: Int) {
+        dataStore.edit { preferences ->
+            preferences[SettingsConstants.KEY_CHAT_MESSAGE_PAGINATION_LIMIT] = limit
         }
     }
 }

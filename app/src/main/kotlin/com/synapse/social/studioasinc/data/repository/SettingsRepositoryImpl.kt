@@ -218,6 +218,12 @@ class SettingsRepositoryImpl private constructor(
         settingsDataStore.setChatAvatarDisabled(enabled)
     }
 
+    override val chatMessagePaginationLimit: Flow<Int> = settingsDataStore.chatMessagePaginationLimit
+
+    override suspend fun setChatMessagePaginationLimit(limit: Int) {
+        settingsDataStore.setChatMessagePaginationLimit(limit)
+    }
+
     override val chatMaxMessageChunkSize: Flow<Int> = settingsDataStore.chatMaxMessageChunkSize
 
     override suspend fun setChatMaxMessageChunkSize(size: Int) {

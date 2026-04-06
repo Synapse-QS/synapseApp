@@ -63,6 +63,7 @@ object SettingsConstants {
     val KEY_AI_CUSTOM_MODEL = stringPreferencesKey("ai_custom_model")
     val KEY_MESSAGE_SUGGESTION_ENABLED = booleanPreferencesKey("message_suggestion_enabled")
     val KEY_CHAT_AVATAR_DISABLED = booleanPreferencesKey("chat_avatar_disabled")
+    val KEY_CHAT_MESSAGE_PAGINATION_LIMIT = intPreferencesKey("chat_message_pagination_limit")
 
     val KEY_DATA_SAVER_ENABLED = booleanPreferencesKey("data_saver_enabled")
 
@@ -114,6 +115,7 @@ object SettingsConstants {
     val DEFAULT_CHAT_MAX_MESSAGE_CHUNK_SIZE = 1024
     val DEFAULT_MESSAGE_SUGGESTION_ENABLED = false
     val DEFAULT_CHAT_AVATAR_DISABLED = false
+    const val DEFAULT_CHAT_MESSAGE_PAGINATION_LIMIT = 50
     val DEFAULT_DATA_SAVER_ENABLED = false
     val DEFAULT_ENTER_IS_SEND_ENABLED = false
     val DEFAULT_MEDIA_VISIBILITY_ENABLED = true
