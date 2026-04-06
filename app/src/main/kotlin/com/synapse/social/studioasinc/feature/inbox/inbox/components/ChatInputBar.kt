@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Stop
@@ -348,7 +347,7 @@ fun ChatInputBar(
                                         val event = awaitPointerEvent()
                                         val change = event.changes.firstOrNull() ?: break
                                         // Swipe left to cancel
-                                        if (change.positionChange().x < -40f) {
+                                        if (change.position.x - change.previousPosition.x < -40f) {
                                             cancelled = true
                                             isSwipeToCancel = true
                                             change.consume()
