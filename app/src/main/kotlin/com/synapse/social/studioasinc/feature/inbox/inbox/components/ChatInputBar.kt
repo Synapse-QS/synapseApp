@@ -182,7 +182,7 @@ fun ChatInputBar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = Spacing.None, vertical = Spacing.None),
+                    .padding(vertical = Spacing.None),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Emoji / Attachment button
@@ -220,7 +220,7 @@ fun ChatInputBar(
                 TextField(
                     value = inputText,
                     onValueChange = onInputTextChange,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).defaultMinSize(minHeight = 1.dp),
                     enabled = canSendMessage,
                     placeholder = { Text(stringResource(R.string.chat_type_message)) },
                     colors = TextFieldDefaults.colors(
@@ -250,7 +250,7 @@ fun ChatInputBar(
                     }
                 }
 
-                Spacer(modifier = Modifier.width(Spacing.None))
+                Spacer(modifier = Modifier.width(Spacing.Tiny))
             }
         }
 
