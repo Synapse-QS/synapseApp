@@ -577,7 +577,7 @@ fun MessageBubble(
                         style = MaterialTheme.typography.labelSmall,
                         color = contentColor.copy(alpha = 0.6f),
                         fontStyle = FontStyle.Italic,
-                        modifier = Modifier.align(Alignment.End)
+                        modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.End)
                     )
                 }
             }
