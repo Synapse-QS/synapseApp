@@ -47,50 +47,47 @@ class StorageRepositoryImpl(
         if (row == null) return@coroutineScope StorageConfig()
 
         val imgBBKeyDeferred = async(Dispatchers.IO) {
-             secureStorage.getString(KEY_IMGBB)?.takeIf { it.isNotBlank() }
-                 ?: row.imgbb_key.takeIf { it.isNotBlank() }
-                 ?: SynapseConfig.IMGBB_API_KEY
+            secureStorage.getString(KEY_IMGBB)?.takeIf { it.isNotBlank() }
+                ?: row.imgbb_key.takeIf { it.isNotBlank() }
+                ?: ""
         }
 
         val cloudinaryApiKeyDeferred = async(Dispatchers.IO) {
             secureStorage.getString(KEY_CLOUDINARY_API_KEY)?.takeIf { it.isNotBlank() }
                 ?: row.cloudinary_api_key.takeIf { it.isNotBlank() }
-                ?: SynapseConfig.CLOUDINARY_API_KEY
+                ?: ""
         }
         val cloudinaryApiSecretDeferred = async(Dispatchers.IO) {
             secureStorage.getString(KEY_CLOUDINARY_API_SECRET)?.takeIf { it.isNotBlank() }
                 ?: row.cloudinary_api_secret.takeIf { it.isNotBlank() }
-                ?: SynapseConfig.CLOUDINARY_API_SECRET
+                ?: ""
         }
 
         val supabaseKeyDeferred = async(Dispatchers.IO) {
             secureStorage.getString(KEY_SUPABASE)?.takeIf { it.isNotBlank() }
                 ?: row.supabase_key.takeIf { it.isNotBlank() }
-                ?: SynapseConfig.SUPABASE_ANON_KEY
+                ?: ""
         }
 
-        val r2AccessKeyIdDeferred = async(Dispatchers.IO) { 
-            secureStorage.getString(KEY_R2_ACCESS_KEY_ID)?.takeIf { it.isNotBlank() } 
+        val r2AccessKeyIdDeferred = async(Dispatchers.IO) {
+            secureStorage.getString(KEY_R2_ACCESS_KEY_ID)?.takeIf { it.isNotBlank() }
                 ?: row.r2_access_key_id.takeIf { it.isNotBlank() }
-                ?: SynapseConfig.SUPABASE_SYNAPSE_S3_ACCESS_KEY_ID
+                ?: ""
         }
-        val r2SecretAccessKeyDeferred = async(Dispatchers.IO) { 
-            secureStorage.getString(KEY_R2_SECRET_ACCESS_KEY)?.takeIf { it.isNotBlank() } 
+        val r2SecretAccessKeyDeferred = async(Dispatchers.IO) {
+            secureStorage.getString(KEY_R2_SECRET_ACCESS_KEY)?.takeIf { it.isNotBlank() }
                 ?: row.r2_secret_access_key.takeIf { it.isNotBlank() }
-                ?: SynapseConfig.SUPABASE_SYNAPSE_S3_ACCESS_KEY
+                ?: ""
         }
         val compressImagesDeferred = async(Dispatchers.IO) { secureStorage.getString(KEY_COMPRESS_IMAGES)?.toBoolean() ?: true }
 
-        // Logic for Cloudinary Cloud Name fallback
-        val cloudinaryCloudName = row.cloudinary_cloud_name.takeIf { it.isNotBlank() } ?: SynapseConfig.CLOUDINARY_CLOUD_NAME
+        val cloudinaryCloudName = row.cloudinary_cloud_name
         val cloudinaryUploadPreset = row.cloudinary_upload_preset
 
-        // Logic for Supabase URL fallback
-        val supabaseUrl = row.supabase_url.takeIf { it.isNotBlank() } ?: SynapseConfig.SUPABASE_URL
+        val supabaseUrl = row.supabase_url
 
-        // Logic for R2 endpoint URL and bucket name fallback
-        val r2AccountId = row.r2_account_id.takeIf { it.isNotBlank() } ?: SynapseConfig.SUPABASE_SYNAPSE_S3_ENDPOINT_URL
-        val r2BucketName = row.r2_bucket_name.takeIf { it.isNotBlank() } ?: "synapse"
+        val r2AccountId = row.r2_account_id
+        val r2BucketName = row.r2_bucket_name
 
         StorageConfig(
             photoProvider = row.photo_provider.toStorageProvider(),
@@ -186,6 +183,31 @@ class StorageRepositoryImpl(
         // I will use updateImgBB with existing key to trigger update.
         val currentKey = queries.getConfig().executeAsOneOrNull()?.imgbb_key ?: ""
         queries.updateImgBB(currentKey, TimeProvider.nowMillis())
+    }
+
+    override suspend fun clearProviderConfig(provider: StorageProvider): Unit = withContext(Dispatchers.IO) {
+        val now = TimeProvider.nowMillis()
+        when (provider) {
+            StorageProvider.IMGBB -> {
+                secureStorage.clear(KEY_IMGBB)
+                queries.updateImgBB("", now)
+            }
+            StorageProvider.CLOUDINARY -> {
+                secureStorage.clear(KEY_CLOUDINARY_API_KEY)
+                secureStorage.clear(KEY_CLOUDINARY_API_SECRET)
+                queries.updateCloudinary("", "", "", "", now)
+            }
+            StorageProvider.SUPABASE -> {
+                secureStorage.clear(KEY_SUPABASE)
+                queries.updateSupabase("", "", "", now)
+            }
+            StorageProvider.CLOUDFLARE_R2 -> {
+                secureStorage.clear(KEY_R2_ACCESS_KEY_ID)
+                secureStorage.clear(KEY_R2_SECRET_ACCESS_KEY)
+                queries.updateR2("", "", "", "", now)
+            }
+            StorageProvider.DEFAULT -> Unit
+        }
     }
 
     override suspend fun ensureDefault() = withContext(Dispatchers.IO) {

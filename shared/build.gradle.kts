@@ -70,7 +70,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
                 // Coroutines
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
                 // DateTime
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
@@ -94,7 +94,7 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
             }
         }
 
@@ -102,8 +102,8 @@ kotlin {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:3.4.2")
                 implementation("org.whispersystems:signal-protocol-android:2.8.1")
-                implementation("androidx.security:security-crypto:1.1.0-alpha06")
-                implementation("androidx.exifinterface:exifinterface:1.3.7")
+                implementation("androidx.security:security-crypto:1.1.0-beta01")
+                implementation("androidx.exifinterface:exifinterface:1.4.2")
                 implementation("app.cash.sqldelight:android-driver:2.3.2")
                 implementation("io.insert-koin:koin-android:4.1.1")
             }
@@ -112,7 +112,7 @@ kotlin {
         val androidUnitTest by getting {
             dependencies {
                 implementation("junit:junit:4.13.2")
-                implementation("org.mockito:mockito-core:5.11.0")
+                implementation("org.mockito:mockito-core:5.18.0")
             }
         }
 
@@ -179,7 +179,7 @@ android {
 
 configurations.all {
     resolutionStrategy {
-        force("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         force("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
         eachDependency {
             if (requested.group == "org.jetbrains.kotlin" && requested.name.startsWith("kotlin-stdlib")) {

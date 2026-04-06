@@ -196,7 +196,7 @@ dependencies {
     implementation 'androidx.compose.material3:material3:1.5.0-alpha16'
     implementation 'androidx.compose.material:material-icons-extended'
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.activity:activity-compose:1.12.4'
+    implementation 'androidx.activity:activity-compose:1.13.0'
     implementation 'androidx.compose.foundation:foundation'
     implementation 'androidx.compose.animation:animation'
     implementation 'androidx.compose.runtime:runtime-livedata'
@@ -212,8 +212,8 @@ dependencies {
     implementation 'io.coil-kt:coil:2.7.0'
 
     // Accompanist for system UI controller
-    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.32.0'
-    implementation 'com.google.accompanist:accompanist-swiperefresh:0.32.0'
+    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.36.0'
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.36.0'
 
     // Hilt for dependency injection
     implementation 'com.google.dagger:hilt-android:2.59.2'
@@ -238,9 +238,9 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.2")
 
     // Firebase Vertex AI for Gemini
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
     implementation("com.google.firebase:firebase-messaging")
-    implementation("com.google.firebase:firebase-vertexai")
+    implementation("com.google.firebase:firebase-vertexai:16.0.0")
     implementation("com.google.genai:google-genai:1.29.0")
 
     // SQLDelight Driver
@@ -251,26 +251,26 @@ dependencies {
 
     // Biometric authentication
     implementation 'androidx.biometric:biometric:1.1.0'
-    implementation "androidx.credentials:credentials:1.2.2"
-    implementation "androidx.credentials:credentials-play-services-auth:1.2.2"
+    implementation "androidx.credentials:credentials:1.5.0"
+    implementation "androidx.credentials:credentials-play-services-auth:1.5.0"
     
     // Google Sign-In with Credential Manager
-    implementation 'com.google.android.gms:play-services-auth:21.4.0'
-    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
+    implementation 'com.google.android.gms:play-services-auth:21.5.1'
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.2.0'
 
     // AndroidX Core & UI Components
-    implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation 'androidx.core:core-splashscreen:1.2.0'
     implementation 'androidx.core:core-ktx:1.18.0'
     implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation 'androidx.activity:activity-ktx:1.12.4'
-    implementation 'androidx.fragment:fragment-ktx:1.8.8'
+    implementation 'androidx.activity:activity-ktx:1.13.0'
+    implementation 'androidx.fragment:fragment-ktx:1.8.9'
     implementation 'com.google.android.material:material:1.14.0-alpha10'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0'
 
     // Common UI components
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.viewpager2:viewpager2:1.1.0'
 
     // Image zoom functionality
@@ -289,26 +289,26 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.9.7'
     implementation 'androidx.navigation:navigation-ui-ktx:2.9.7'
     implementation 'androidx.navigation:navigation-compose:2.9.7'
-    implementation 'androidx.work:work-runtime-ktx:2.11.0'
+    implementation 'androidx.work:work-runtime-ktx:2.11.2'
     implementation 'androidx.paging:paging-runtime-ktx:3.4.2'
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
     // DataStore for preferences
-    implementation 'androidx.datastore:datastore-preferences:1.1.1'
+    implementation 'androidx.datastore:datastore-preferences:1.2.1'
 
     // EncryptedSharedPreferences
-    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+    implementation 'androidx.security:security-crypto:1.1.0-beta01'
 
     // Paging Compose - Added explicitly as per reviewer
     implementation "androidx.paging:paging-compose:3.4.2"
 
     // Media3 for Video
-    implementation "androidx.media3:media3-exoplayer:1.9.2"
-    implementation "androidx.media3:media3-ui:1.9.2"
-    implementation "androidx.media3:media3-common:1.9.2"
+    implementation "androidx.media3:media3-exoplayer:1.10.0"
+    implementation "androidx.media3:media3-ui:1.10.0"
+    implementation "androidx.media3:media3-common:1.10.0"
 
     // Google Play services - Removed as not needed with Supabase
-    // implementation 'com.google.android.gms:play-services-auth:21.4.0'
+    // implementation 'com.google.android.gms:play-services-auth:21.5.1'
 
     // Networking
     implementation 'com.squareup.okhttp3:okhttp:5.3.2'
@@ -320,11 +320,11 @@ dependencies {
     // Local AARs
 
     // Security Crypto
-    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+    implementation "androidx.security:security-crypto:1.1.0-beta01"
 
     // Kotlin coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2'
 
     // Desugaring for Java 8+ APIs
     // coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
@@ -334,7 +334,7 @@ dependencies {
 
     // Misc / helpers
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.3.20"
-    implementation 'androidx.browser:browser:1.7.3'
+    implementation 'androidx.browser:browser:1.10.0'
 
     // Markdown (Markwon + GFM)
     implementation 'io.noties.markwon:core:4.6.2'
@@ -357,23 +357,23 @@ dependencies {
     implementation "androidx.camera:camera-extensions:${camerax_version}"
 
     // Exif Interface
-    implementation "androidx.exifinterface:exifinterface:1.4.0"
+    implementation "androidx.exifinterface:exifinterface:1.4.2"
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:5.10.0'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.4.0'
     testImplementation 'androidx.arch.core:core-testing:2.2.0'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0'
-    testImplementation 'org.robolectric:robolectric:4.11.1'
-    testImplementation 'androidx.test:core:1.5.0'
-    testImplementation 'androidx.test.ext:junit:1.1.5'
-    testImplementation 'androidx.test:runner:1.5.2'
+    testImplementation 'org.robolectric:robolectric:4.15.1'
+    testImplementation 'androidx.test:core:1.7.0'
+    testImplementation 'androidx.test.ext:junit:1.3.0'
+    testImplementation 'androidx.test:runner:1.7.0'
 }
 
 // Supabase configuration is handled through BuildConfig
 dependencies {
     // Charts (Vico)
-    implementation "com.patrykandpatrick.vico:compose:2.0.0-alpha.12"
-    implementation "com.patrykandpatrick.vico:compose-m3:2.0.0-alpha.12"
+    implementation "com.patrykandpatrick.vico:compose:2.1.3"
+    implementation "com.patrykandpatrick.vico:compose-m3:2.1.3"
 }

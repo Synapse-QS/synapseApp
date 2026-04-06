@@ -67,5 +67,5 @@ data class ChatSettings(
     val blurIntensity: Float = 0f,
     val listLayout: ChatListLayout = ChatListLayout.DOUBLE_LINE,
     val swipeGesture: ChatSwipeGesture = ChatSwipeGesture.ARCHIVE,
-    val maxMessageChunkSize: Int = 500
+    val maxMessageChunkSize: Int = 1024
 )
