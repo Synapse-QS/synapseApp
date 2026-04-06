@@ -220,7 +220,10 @@ fun ChatInputBar(
                 TextField(
                     value = inputText,
                     onValueChange = onInputTextChange,
-                    modifier = Modifier.weight(1f).defaultMinSize(minHeight = 1.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .defaultMinSize(minHeight = 1.dp)
+                        .padding(top = Spacing.Small, bottom = Spacing.Small),
                     enabled = canSendMessage,
                     placeholder = { Text(stringResource(R.string.chat_type_message)) },
                     colors = TextFieldDefaults.colors(
@@ -229,12 +232,6 @@ fun ChatInputBar(
                         disabledContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
-                        top = Spacing.Small,
-                        bottom = Spacing.Small,
-                        start = Spacing.None,
-                        end = Spacing.None
                     ),
                     maxLines = 4
                 )

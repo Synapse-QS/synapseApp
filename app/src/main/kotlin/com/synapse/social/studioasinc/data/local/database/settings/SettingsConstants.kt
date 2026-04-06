@@ -111,7 +111,7 @@ object SettingsConstants {
     val DEFAULT_CHAT_MESSAGE_CORNER_RADIUS = 16
     val DEFAULT_CHAT_LIST_LAYOUT = com.synapse.social.studioasinc.shared.domain.model.settings.ChatListLayout.DOUBLE_LINE
     val DEFAULT_CHAT_SWIPE_GESTURE = com.synapse.social.studioasinc.shared.domain.model.settings.ChatSwipeGesture.ARCHIVE
-    val DEFAULT_CHAT_MAX_MESSAGE_CHUNK_SIZE = 500
+    val DEFAULT_CHAT_MAX_MESSAGE_CHUNK_SIZE = 1024
     val DEFAULT_MESSAGE_SUGGESTION_ENABLED = false
     val DEFAULT_CHAT_AVATAR_DISABLED = false
     val DEFAULT_DATA_SAVER_ENABLED = false
