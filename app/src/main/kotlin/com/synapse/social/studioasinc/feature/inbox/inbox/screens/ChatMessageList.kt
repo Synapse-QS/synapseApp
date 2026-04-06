@@ -32,6 +32,7 @@ internal fun ChatMessageList(
     chatThemePreset: ChatThemePreset,
     chatAvatarDisabled: Boolean,
     participantProfile: com.synapse.social.studioasinc.shared.domain.model.User?,
+    initialParticipantName: String?,
     participantAvatarUrl: String?,
     isGroupChat: Boolean,
     listState: LazyListState,
@@ -117,6 +118,7 @@ internal fun ChatMessageList(
             item(key = "chat_intro_header") {
                 com.synapse.social.studioasinc.feature.inbox.inbox.components.ChatIntroHeader(
                     participantProfile = participantProfile,
+                    initialParticipantName = initialParticipantName,
                     avatarUrl = participantAvatarUrl,
                     onViewProfile = { participantProfile?.uid?.let(onNavigateToProfile) }
                 )

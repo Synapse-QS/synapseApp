@@ -21,6 +21,7 @@ import com.synapse.social.studioasinc.shared.domain.model.User
 @Composable
 fun ChatIntroHeader(
     participantProfile: User?,
+    initialParticipantName: String?,
     avatarUrl: String?,
     onViewProfile: () -> Unit,
     modifier: Modifier = Modifier
@@ -43,7 +44,7 @@ fun ChatIntroHeader(
         Spacer(modifier = Modifier.height(Spacing.Medium))
 
         Text(
-            text = participantProfile?.displayName ?: participantProfile?.name ?: participantProfile?.username ?: "",
+            text = participantProfile?.displayName ?: participantProfile?.name ?: participantProfile?.username ?: initialParticipantName ?: "",
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -53,9 +54,13 @@ fun ChatIntroHeader(
         val subtitle = if (!participantProfile?.bio.isNullOrBlank()) {
             participantProfile?.bio ?: ""
         } else {
-            val username = participantProfile?.username ?: ""
+            val username = participantProfile?.username ?: initialParticipantName?.replace(" ", "")?.lowercase() ?: ""
             val followers = participantProfile?.followersCount ?: 0
-            "@$username · $followers followers"
+            if (username.isNotEmpty()) {
+                "@$username · $followers followers"
+            } else {
+                "$followers followers"
+            }
         }
 
         Text(

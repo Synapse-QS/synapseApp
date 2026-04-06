@@ -260,10 +260,18 @@ fun ChatScreen(
     }
 
     // Auto-scroll to bottom when new messages arrive
+    var previousMessagesSize by remember { mutableStateOf(0) }
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(0)
+            if (previousMessagesSize == 0) {
+                // Initial load: Snap to bottom instantly without animation to prevent scroll jump
+                listState.scrollToItem(0)
+            } else if (messages.size > previousMessagesSize) {
+                // New message arrived: Animate scroll
+                listState.animateScrollToItem(0)
+            }
         }
+        previousMessagesSize = messages.size
     }
 
     Scaffold(
@@ -343,6 +351,7 @@ fun ChatScreen(
                         chatThemePreset = chatThemePreset,
                         chatAvatarDisabled = chatAvatarDisabled,
                         participantProfile = participantProfile,
+                        initialParticipantName = initialParticipantName,
                         participantAvatarUrl = participantAvatarUrl,
                         isGroupChat = isGroupChat,
                         listState = listState,
