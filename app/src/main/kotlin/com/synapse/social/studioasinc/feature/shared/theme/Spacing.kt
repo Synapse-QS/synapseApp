@@ -105,6 +105,8 @@ object Sizes {
     val CommentIndent = 68.dp
 
     val SendButton = 44.dp
+    val SendButtonCompact = 36.dp
+    val InputButtonCompact = 40.dp
     val BubbleMaxWidth = 280.dp
     val ChatMaxWidth = 240.dp
     val StatusDot = 10.dp

@@ -187,7 +187,7 @@ fun ChatInputBar(
             ) {
                 // Emoji / Attachment button
                 Box {
-                    IconButton(onClick = { showAttachmentMenu = true }, modifier = Modifier.size(40.dp)) {
+                    IconButton(onClick = { showAttachmentMenu = true }, modifier = Modifier.size(Sizes.InputButtonCompact)) {
                         Icon(
                             Icons.Default.Add,
                             contentDescription = "Attach file",
@@ -242,7 +242,7 @@ fun ChatInputBar(
                 @OptIn(ExperimentalFoundationApi::class)
                 Surface(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(Sizes.SendButtonCompact)
                         .combinedClickable(
                             onClick = { onSendMessage(); dismissedPreviewUrl = null }
                         ),
