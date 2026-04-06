@@ -376,12 +376,23 @@ fun MessageBubble(
                 horizontalAlignment = if (isFromMe) Alignment.End else Alignment.Start
             ) {
         if (position == GroupPosition.FIRST || position == GroupPosition.SINGLE) {
-            Text(
-                text = remember(message.createdAt) { formatMessageTime(message.createdAt) },
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                modifier = Modifier.padding(bottom = Spacing.Tiny)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (message.isEdited) {
+                    Text(
+                        text = stringResource(id = R.string.edited),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        fontStyle = FontStyle.Italic,
+                        modifier = Modifier.padding(end = Spacing.ExtraSmall)
+                    )
+                }
+                Text(
+                    text = remember(message.createdAt) { formatMessageTime(message.createdAt) },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(bottom = Spacing.Tiny)
+                )
+            }
         }
         Box {
         Surface(
@@ -570,16 +581,6 @@ fun MessageBubble(
                     }
                 }
                 } // close Box
-                Spacer(modifier = Modifier.height(Spacing.Tiny))
-                if (message.isEdited) {
-                    Text(
-                        text = stringResource(id = R.string.edited),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = contentColor.copy(alpha = 0.6f),
-                        fontStyle = FontStyle.Italic,
-                        modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.End)
-                    )
-                }
             }
         }
         if (message.reactions.isNotEmpty()) {
